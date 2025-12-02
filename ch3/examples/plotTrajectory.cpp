@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
         Twr.pretranslate(Vector3d(tx, ty, tz));
         poses.push_back(Twr);
     }
-    cout << "read total" << poses.size() << "pose entries" << endl;
+    cout << "read total " << poses.size() << " pose entries" << endl;
 
     // draw trajectory in pangolin
     DrawTrajectory(poses);

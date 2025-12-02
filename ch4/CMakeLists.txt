@@ -3,7 +3,7 @@ project(useSophus)
 
 # 为使用 sophus，需要使用find_package命令找到它
 find_package(Sophus REQUIRED)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Eigen
 include_directories("/usr/include/eigen3")
 add_executable(useSophus useSophus.cpp)

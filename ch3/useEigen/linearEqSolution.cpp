@@ -1,3 +1,10 @@
+/*
+* 自定义高斯消元法函数
+* 输入：A 为系数矩阵，b 为右侧向量
+* 输出：x 为解向量
+*/
+
+
 # include <iostream>
 # include <Eigen/Dense>
 # include <Eigen/Core>
@@ -12,7 +19,7 @@ VectorXd gaussianElimination(const MatrixXd& A, const VectorXd& b) {
     const Index n = A.rows(); // 矩阵的行数（即方程个数）
 
     // 将 A 和 b 合并为增广矩阵 [A | b]
-    MatrixXd augmented(n, n + 1);
+    MatrixXd augmented(n, n + 1);   // MatrixXd表示这是一个double类型的动态矩阵
     augmented << A, b;
 
     // 消元阶段：将矩阵 A 转化为上三角矩阵
@@ -60,14 +67,17 @@ int main() {
         }
     }
 
-    EigenSolver<Matrix3d> const solver1(B1);
-    MatrixXd A1 = B1.transpose() * B1 + 0.1 * MatrixXd::Identity(3, 3);
+    /*
+    EigenSolver是Eigen 库中用于进行 特征值分解的求解器
+    */
+    EigenSolver<Matrix3d> const solver1(B1);    // 计算矩阵B1的特征值和特征向量
+    MatrixXd A1 = B1.transpose() * B1 + 0.1 * MatrixXd::Identity(3, 3);     // A1=B1^T*B1+0.1*I 确保A1正定满秩
 
-    const VectorXcd eigenValueA = solver1.eigenvalues();
+    const VectorXcd eigenValueB1 = solver1.eigenvalues();   // 获取矩阵B1的特征值
 
-    cout << "eigenValue of A = \n" << eigenValueA << endl;
+    cout << "eigenValue of B1 = \n" << eigenValueB1 << endl;
 
-  const VectorXd b1 = VectorXd::Random(3,1);
+    const VectorXd b1 = VectorXd::Random(3,1);  // 生成一个3x1的随机向量b1
 
     // 1.1 调用自定义高斯消元法（Gaussian Elimination）函数
     const VectorXd gex = gaussianElimination(A1, b1);
@@ -79,19 +89,28 @@ int main() {
     const VectorXd ex = A1.partialPivLu().solve(b1);
     cout << "Solution of Eigen: x = \n" << ex << endl;
 
-  // 2. 使用LU分解法求解线性方程Ax=b
-  const Matrix<double, 3, 1> lux = A1.lu().solve(b1); // A.lu().solve(b) 的 lu() 分解适用于方阵（n×n）
+    // 2. 使用LU分解法求解线性方程Ax=b
+    /*
+    LU分解：将矩阵分解为一个下三角矩阵L和一个上三角矩阵U，即A=LU。实际更常用PA=LU。在分解前，把绝对值最大的元素交换到对角线（主元）位置，保证除法稳定。
+    然后，我们可以通过求解L(U*x)=b来得到x的解。主要利用下三角矩阵的求解比较方便。
+    */
+    const Matrix<double, 3, 1> lux = A1.lu().solve(b1); // A.lu().solve(b) 的 lu() 分解适用于方阵（n×n）
 
-  cout << "Solution of lu decomposition: x = \n" << lux << endl;
+    cout << "Solution of lu decomposition: x = \n" << lux << endl;
 
-  // 3. 使用LLT分解法求解线性方程Ax=b，要求A是对称正定矩阵
-  LLT<Matrix<double, 3, 3>> const llt(A1); // LLT 分解
-  if (llt.info() == Success) {
-    const Matrix<double, 3, 1> lltx = llt.solve(b1);
-    cout << "Solution of LLT decomposition: x = \n" << lltx << endl;
-  } else {
-    cout << "Matrix A is not positive definite!" << endl;
-  }
+    // 3. 使用LLT分解法求解线性方程Ax=b，要求A是对称正定矩阵，cholesky分解
+    /*
+    Cholesky分解：将正定矩阵分解为一个下三角矩阵L和其转置的乘积，即A=LL^T。
+    然后，我们可以通过求解L^T*x=L*b来得到x的解。主要利用下三角矩阵的求解比较方便。
+    将一个复杂矩阵求逆转化为两次下三角矩阵的求解，比直接求逆要快很多。
+    */
+    LLT<Matrix<double, 3, 3>> const llt(A1); // LLT 分解
+    if (llt.info() == Success) {
+        const Matrix<double, 3, 1> lltx = llt.solve(b1);
+        cout << "Solution of LLT decomposition: x = \n" << lltx << endl;
+    } else {
+        cout << "Matrix A is not positive definite!" << endl;
+    }
 
     // 4. 使用QR分解法
     // QR 分解
@@ -144,5 +163,5 @@ int main() {
 
     cout << "Solution of Eigen Value Decomposition: x = \n" << evdx << endl;
 
-  return 0;
+    return 0;
 }

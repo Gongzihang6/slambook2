@@ -1,11 +1,11 @@
-1. How to compile this program:
+1. 如何编译本程序：
 
-* use pangolin: slambook/3rdpart/Pangolin or download it from github: https://github.com/stevenlovegrove/Pangolin
+* 使用 Pangolin：slambook/3rdpart/Pangolin 或从 GitHub 下载：https://github.com/stevenlovegrove/Pangolin
 
-* install dependency for pangolin (mainly the OpenGL): 
+* 安装 Pangolin 的依赖（主要是 OpenGL）：
 sudo apt-get install libglew-dev
 
-* compile and install pangolin
+* 编译并安装 Pangolin
 cd [path-to-pangolin]
 mkdir build
 cd build
@@ -14,21 +14,21 @@ make
 sudo make install 
 ldconfig
 
-* compile this program:
+* 编译本程序：
 mkdir build
 cd build
 cmake ..
 make 
 
-* run the build/visualizeGeometry
+* 运行 build/visualizeGeometry
 
-2. How to use this program:
+2. 如何使用本程序：
 
-The UI in the left panel displays different representations of T_w_c ( camera to world ). It shows the rotation matrix, tranlsation vector, euler angles (in roll-pitch-yaw order) and the quaternion.
-Drag your left mouse button to move the camera, right button to rotate it around the box, center button to rotate the camera itself, and press both left and right button to roll the view. 
-Note that in this program the original X axis is right (red line), Y is up (green line) and Z in back axis (blue line). You (camera) are looking at (0,0,0) standing on (3,3,3) at first. 
+左侧面板展示了 T_w_c（相机到世界）的不同表示形式，包括旋转矩阵、平移向量、欧拉角（按 roll-pitch-yaw 顺序）以及四元数。
+拖动鼠标左键可移动相机，右键可让相机绕盒子旋转，中键可旋转相机自身，同时按下左右键可滚动视图。
+注意：在本程序中，原始 X 轴向右（红线），Y 轴向上（绿线），Z 轴向后（蓝线）。初始时，你（相机）站在 (3,3,3) 处，看向 (0,0,0)。
 
-3. Problems may happen:
-* I found that in virtual machines there may be an error in pangolin, which was solved in its issue: https://github.com/stevenlovegrove/Pangolin/issues/74 . You need to comment the two lines mentioned by paulinus, and the recompile and reinstall Pangolin, if you happen to find this problem. 
+3. 可能遇到的问题：
+* 我发现虚拟机中可能会出现 Pangolin 报错，该问题在其 issue 中已有解决方案：https://github.com/stevenlovegrove/Pangolin/issues/74。如遇到此问题，请按 paulinus 提到的方法注释掉两行代码，然后重新编译并安装 Pangolin。
 
-If you still have problems using this program, please contact: gaoxiang12@mails.tsinghua.edu.cn
+如仍有使用问题，请联系：gaoxiang12@mails.tsinghua.edu.cn

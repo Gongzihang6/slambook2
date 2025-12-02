@@ -1,7 +1,28 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "CMake Build & Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            // [核心魔法] 让 CMake Tools 告诉调试器，刚才编译出来的可执行文件在哪里
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // [核心魔法] 调试前先执行 "cmake build" 任务
+            // 这样你按 F5 时，它会先自动去 build 文件夹里编译
+            "preLaunchTask": "CMake: build" 
+        }
+    ]
 }
