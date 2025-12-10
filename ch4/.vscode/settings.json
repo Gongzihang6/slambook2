@@ -1,0 +1,11 @@
+{
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "files.associations": {
+        "*.py": "python",
+        "cmath": "cpp",
+        "bitset": "cpp",
+        "core": "cpp",
+        "iostream": "cpp"
+    },
+    "cmake.sourceDirectory": "/wsl.localhost/Ubuntu/home/gzh/learn_resource/slambook2/ch4"
+}
