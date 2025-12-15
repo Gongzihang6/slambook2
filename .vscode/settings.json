@@ -2,6 +2,6 @@
     "files.associations": {
         "iostream": "cpp"
     },
-    "C_Cpp.default.compilerPath": "/usr/bin/g++-13",
+    "C_Cpp.default.compilerPath": "/usr/bin/g++-11",
     "cmake.ignoreCMakeListsMissing": true
 }

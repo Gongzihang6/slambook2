@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
                 point[1] = (v - cy) * point[2] / fy;
                 Eigen::Vector3d pointWorld = T * point;
 
-                Vector6d p;
+                Vector6d p;     // (x,y,z,R,G,B)
                 p.head<3>() = pointWorld;
                 p[5] = color.data[v * color.step + u * color.channels()];   // blue
                 p[4] = color.data[v * color.step + u * color.channels() + 1]; // green
