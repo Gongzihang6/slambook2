@@ -5,37 +5,67 @@ site_author: Gongzihang6
 
 # 主题设置
 theme:
-  name: material
-  language: zh # 中文界面
-  features:
-    - navigation.tabs # 顶部导航栏
-    - navigation.sections # 侧边栏分组
-    - navigation.expand # 默认展开侧边栏
-    - navigation.top # 返回顶部按钮
-    - search.suggest # 搜索建议
-    - search.highlight # 搜索高亮
+    name: material
+    language: zh # 中文界面
+    features:
+        - navigation.tabs # 顶部导航栏
+        - navigation.sections # 侧边栏分组
+        - navigation.expand # 默认展开侧边栏
+        - navigation.top # 返回顶部按钮
+        - search.suggest # 搜索建议
+        - search.highlight # 搜索高亮
 
 # 必要的扩展 (支持数学公式和更丰富的 Markdown 语法)
 markdown_extensions:
-  - admonition
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.highlight:
-      anchor_linenums: true
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences
+    - pymdownx.arithmatex:
+          generic: true
+    - pymdownx.highlight:
+          anchor_linenums: true
 
 # 数学公式渲染引擎 (MathJax)
 extra_javascript:
-  - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    - javascripts/mathjax.js
+    - https://polyfill.io/v3/polyfill.min.js?features=es6
+    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 # 目录结构 (你可以根据自己的笔记慢慢添加)
 nav:
-  - 首页: index.md
-  - 基础知识:
-      - 第2讲-初识SLAM: ch2/README.md
-      - 第3讲-三维空间刚体运动: ch3/README.md
-  - 代码实践:
-      - 运行环境配置: practice/env.md
+    - 首页: index.md
+    - 基础知识:
+          - 第2讲-初识SLAM: ch2/README.md
+          - 第3讲-三维空间刚体运动: ch3/README.md
+    - 代码实践:
+          - 运行环境配置: practice/env.md
+
+# 右上角展示GitHub仓库
+repo_url: https://github.com/Gongzihang6/slambook2
+repo_name: Gongzihang6/slambook2
+edit_uri: edit/master/docs/ # 允许读者点击编辑按钮跳转到源码
+
+# 插件配置
+plugins:
+    - search
+    - git-revision-date-localized:
+          type: date
+          enable_creation_date: true
+
+extra:
+    # analytics:
+    #   provider: google # ...你的谷歌分析配置
+
+    # 评论系统配置
+    comments:
+        provider: giscus
+        repo: Gongzihang6/slambook2
+        repo_id: R_kgDOQccb4Q # 从你截图里提取的 data-repo-id
+        category: Announcements # 从你截图里提取的 data-category
+        category_id: DIC_kwDOQccb4Cz-Dc # 从你截图里提取的 data-category-id
+        mapping: pathname # 对应 data-mapping="pathname"
+        reactions_enabled: true # 对应 data-reactions-enabled="1"
+        emit_metadata: false
+        input_position: top # 对应 input-position="top"，评论框在评论列表上方
+        lang: zh-CN # 对应 data-lang="zh-CN"
+        # theme: preferred_color_scheme # 主题会自动跟随网站的日间/夜间模式，不用手动设
