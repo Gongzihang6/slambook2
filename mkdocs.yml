@@ -69,3 +69,8 @@ extra:
         input_position: top # 对应 input-position="top"，评论框在评论列表上方
         lang: zh-CN # 对应 data-lang="zh-CN"
         # theme: preferred_color_scheme # 主题会自动跟随网站的日间/夜间模式，不用手动设
+
+# 注册自定义 CSS 文件
+extra_css:
+  - stylesheets/extra.css
+copyright: Copyright &copy; 2025 Gongzihang6

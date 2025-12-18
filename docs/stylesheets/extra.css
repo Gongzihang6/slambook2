@@ -1,0 +1,4 @@
+/* 隐藏底部的 Made with Material for MkDocs */
+.md-copyright__highlight {
+  display: none;
+}
