@@ -61,8 +61,8 @@ extra:
         provider: giscus
         repo: Gongzihang6/slambook2
         repo_id: R_kgDOQccb4Q # 从你截图里提取的 data-repo-id
-        category: Announcements # 从你截图里提取的 data-category
-        category_id: DIC_kwDOQccb4Cz-Dc # 从你截图里提取的 data-category-id
+        category: General # 从你截图里提取的 data-category
+        category_id: DIC_kwDOQccb4c4Cz-Dd # 从你截图里提取的 data-category-id
         mapping: pathname # 对应 data-mapping="pathname"
         reactions_enabled: true # 对应 data-reactions-enabled="1"
         emit_metadata: false
