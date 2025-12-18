@@ -1,0 +1,13 @@
+{
+    "cmake.sourceDirectory": "/home/gzh/learn_resource/slambook2/ch7",
+    "files.associations": {
+        "*.py": "python",
+        "bitset": "cpp",
+        "core": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "span": "cpp",
+        "vector": "cpp"
+    }
+}

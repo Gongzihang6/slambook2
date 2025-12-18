@@ -1,3 +1,0 @@
-CompileFlags:
-  # 告诉 clangd 在所有子目录的 build 文件夹里找
-  CompilationDatabase: build
