@@ -72,5 +72,5 @@ extra:
 
 # 注册自定义 CSS 文件
 extra_css:
-  - stylesheets/extra.css
+  - docs/stylesheets/extra.css
 copyright: Copyright &copy; 2025 Gongzihang6
