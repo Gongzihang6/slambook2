@@ -54,3 +54,6 @@ target_link_libraries(SURF_self ${OpenCV_LIBS})
 
 add_executable(Haar_self Haar_self.cpp)
 target_link_libraries(Haar_self ${OpenCV_LIBS})
+
+add_executable(Harris_self Harris_self.cpp)
+target_link_libraries(Harris_self ${OpenCV_LIBS})

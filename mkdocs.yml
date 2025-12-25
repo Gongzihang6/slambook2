@@ -8,7 +8,7 @@ theme:
     name: material
     language: zh # 中文界面
     features:
-        - navigation.tabs # 顶部导航栏
+        # - navigation.tabs # 顶部导航栏
         - navigation.sections # 侧边栏分组
         - navigation.expand # 默认展开侧边栏
         - navigation.top # 返回顶部按钮
@@ -34,11 +34,21 @@ extra_javascript:
 # 目录结构 (你可以根据自己的笔记慢慢添加)
 nav:
     - 首页: index.md
-    - 基础知识:
-          - 第2讲-初识SLAM: ch2/README.md
-          - 第3讲-三维空间刚体运动: ch3/README.md
+    - 学习笔记:
+          - 第2讲-初识SLAM: 
+                - 学习笔记/ch2初始slam/初识SLAM.md
+          - 第4讲-李群与李代数:
+                - 学习笔记/ch4李群与李代数/李群与李代数.md
+          - 第7讲-视觉里程计1: 
+                - 学习笔记/ch7视觉里程计1/视觉里程计1.md
     - 代码实践:
           - 运行环境配置: practice/env.md
+    - 课后习题:
+          - 课后习题/ch03-三维空间刚体运动.md
+          - 课后习题/ch04-李群与李代数.md
+          - 课后习题/ch05-相机与图像.md
+          - 课后习题/ch06-非线性优化.md
+          - 课后习题/ch07-视觉里程计1.md
 
 # 右上角展示GitHub仓库
 repo_url: https://github.com/Gongzihang6/slambook2
@@ -47,6 +57,7 @@ edit_uri: edit/master/docs/ # 允许读者点击编辑按钮跳转到源码
 
 # 插件配置
 plugins:
+    - callouts
     - search
     - git-revision-date-localized:
           type: date
@@ -72,5 +83,5 @@ extra:
 
 # 注册自定义 CSS 文件
 extra_css:
-  - docs/stylesheets/extra.css
+    - docs/stylesheets/extra.css
 copyright: Copyright &copy; 2025 Gongzihang6

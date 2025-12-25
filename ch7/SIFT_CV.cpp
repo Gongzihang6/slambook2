@@ -6,6 +6,8 @@
 using namespace std;
 using namespace cv;
 
+// ./SIFT_CV ../dev_0_00X6_20251209_151131_281_rgb.png ../dev_4_00YA_20251209_151131_281_rgb.png
+// ./SIFT_CV ../g1.png ../g2.png
 int main(int argc, char **argv) {
     // 1. 读取参数
     if (argc != 3) {

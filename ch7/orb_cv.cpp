@@ -34,6 +34,7 @@
 using namespace std;
 using namespace cv;
 
+// ./orb_cv ../dev_0_00X6_20251209_151131_281_rgb.png ../dev_4_00YA_20251209_151131_281_rgb.png
 int main(int argc, char **argv){
 	if (argc != 3){
 		cout << "usage: feature_extraction img1 img2" << endl;

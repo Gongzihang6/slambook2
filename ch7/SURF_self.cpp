@@ -175,7 +175,7 @@ public:
     // 配置参数
     int octaves = 3;     // 金字塔组数
     int layers = 4;      // 每组层数
-    float threshold = 500.0f; // Hessian 阈值
+    float threshold = 500.0f; // Hessian行列式 阈值，只有行列式值超过阈值才被保留为关键点
     
     void detect(const Mat& img, vector<SurfPoint>& keypoints) {
         // 1. 计算积分图

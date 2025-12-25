@@ -1,4 +1,133 @@
-/* 隐藏底部的 Made with Material for MkDocs */
-.md-copyright__highlight {
-    display: none;
+/* ==========================================================================
+   1. 字体引入
+   ========================================================================== */
+@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --md-code-font: "JetBrains Mono", Consolas, Menlo, Monaco, monospace;
 }
+
+body, .md-typeset {
+    font-family: "LXGW WenKai Screen", sans-serif !important;
+}
+
+/* 强制代码块使用等宽字体 */
+code, kbd, pre {
+    font-family: var(--md-code-font) !important;
+}
+
+/* ==========================================================================
+   2. 基础排版修复
+   ========================================================================== */
+.md-typeset p { text-indent: 2em; }
+.md-typeset li p, .md-typeset blockquote p, .md-typeset td p { text-indent: 0 !important; }
+footer.md-footer { background-color: #ffffff !important; color: #333333 !important; }
+.md-footer__meta { background-color: #f9f9f9 !important; color: #555555 !important; border-top: 1px solid #e0e0e0; }
+.md-footer__inner { background-color: #ffffff !important; }
+.md-footer__meta a, .md-footer__inner a { color: #009485 !important; font-weight: bold; }
+.md-footer-copyright__highlight { display: none !important; }
+
+/* ==========================================================================
+   3. 代码块完美对齐修复 (重点修改区域)
+   ========================================================================== */
+
+/* --- 容器卡片化 --- */
+.md-typeset .codehilitetable {
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    display: block;
+    overflow-x: auto;
+    margin-bottom: 1em;
+    /* 消除表格自带的间距干扰 */
+    border-spacing: 0; 
+    border-collapse: collapse;
+}
+
+/* --- 关键：强制行号和代码的对齐基准 --- */
+.md-typeset table.codehilitetable tr td {
+    /* 1. 强制顶部对齐，防止因内容高度不同导致的垂直错位 */
+    vertical-align: top !important; 
+    /* 2. 统一上下内边距，这里决定了第一行代码距离边框的距离 */
+    padding-top: 12px !important;    
+    padding-bottom: 12px !important; 
+    /* 3. 清除边框 */
+    border: none !important;
+    /* 4. 强制行高继承，确保 td 高度一致 */
+    line-height: 1.6 !important;
+}
+
+/* --- 针对内部 pre/code/span 的暴力重置 --- */
+/* 这是之前对不齐的罪魁祸首：内部元素可能有默认的 margin/padding */
+.md-typeset table.codehilitetable tr td.linenos pre,
+.md-typeset table.codehilitetable tr td.code pre,
+.md-typeset table.codehilitetable tr td.code pre code,
+.md-typeset table.codehilitetable tr td.code span {
+    font-family: var(--md-code-font) !important;
+    font-size: 0.96em !important;
+    line-height: 1.6 !important; /* 必须与 td 保持一致 */
+    font-weight: 500 !important;
+    
+    /* 核心修复：清除所有内部间距，只依赖 td 的 padding */
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: baseline !important; /* 强制基线对齐 */
+    display: inline-block !important; /* 防止 span 导致的高度坍塌 */
+    width: 100% !important;  /* 撑满容器 */
+}
+
+/* --- 行号列细节 --- */
+.md-typeset table.codehilitetable tr td.linenos {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    border-right: 2px solid #eee !important;
+    background-color: transparent !important;
+    width: auto !important; /* 宽度自适应 */
+    min-width: 30px; /* 防止行号太窄 */
+    text-align: right;
+}
+
+.md-typeset table.codehilitetable tr td.linenos pre {
+    color: #b0bec5;
+}
+
+/* --- 代码列细节 --- */
+.md-typeset table.codehilitetable tr td.code {
+    padding-left: 16px !important;
+    width: 100%;
+}
+
+/* --- 兜底：无行号的普通代码块 --- */
+.md-typeset pre > code {
+    font-family: var(--md-code-font) !important;
+    font-size: 0.96em;
+    font-weight: 500;
+    line-height: 1.6;
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    color: #24292e;
+}
+
+/* 修复表格内的代码块样式冲突 */
+.md-typeset table.codehilitetable pre > code {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    white-space: pre; /* 保持换行 */
+}
+
+/* ==========================================================================
+   4. 语法高亮配色
+   ========================================================================== */
+.md-typeset .k, .md-typeset .kd, .md-typeset .kp, .md-typeset .kr, .md-typeset .kt { color: #d73a49; font-weight: bold; }
+.md-typeset .nf, .md-typeset .nc { color: #6f42c1; font-weight: 600; }
+.md-typeset .s, .md-typeset .s1, .md-typeset .s2 { color: #22863a; }
+.md-typeset .c, .md-typeset .c1, .md-typeset .cs, .md-typeset .cm { color: #6a737d; font-style: italic; }
+.md-typeset .m, .md-typeset .mi { color: #005cc5; }
+.md-typeset .cp { color: #005cc5; font-weight: bold; }
