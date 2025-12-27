@@ -6,17 +6,37 @@ site_author: Gongzihang6
 # 主题设置
 theme:
     name: material
+    custom_dir: overrides # 告诉 mkdocs 去这里找自定义模板
     language: zh # 中文界面
     features:
+        - toc.follow    # 支持typora中的顶部[toc]目录
         - navigation.tabs # 顶部导航栏
         - navigation.sections # 侧边栏分组
         - navigation.expand # 默认展开侧边栏
         - navigation.top # 返回顶部按钮
         - search.suggest # 搜索建议
         - search.highlight # 搜索高亮
+    palette:
+        # 浅色模式配置
+        - scheme: default
+          primary: grey # 主色调
+          accent: purple
+          toggle:
+              icon: material/weather-sunny
+              name: Switch to dark mode
+        # 深色模式配置
+        - scheme: slate
+          primary: grey
+          accent: lime
+          toggle:
+              icon: material/weather-night
+              name: Switch to light mode
 
 # 必要的扩展 (支持数学公式和更丰富的 Markdown 语法)
 markdown_extensions:
+    - pymdownx.mark     # 支持markdown的==高亮
+    - toc:
+          permalink: true  # 可选：为标题添加锚点链接
     - admonition
     - pymdownx.details
     - pymdownx.superfences
@@ -41,6 +61,11 @@ nav:
                 - 学习笔记/ch4李群与李代数/李群与李代数.md
           - 第7讲-视觉里程计1: 
                 - 学习笔记/ch7视觉里程计1/视觉里程计1.md
+                - 学习笔记/ch7视觉里程计1/ICP.md
+                - 学习笔记/ch7视觉里程计1/点云关键点与特征描述子.md
+      #     - 第8讲-视觉里程计2:
+          - 第9讲-后端1:
+                - 学习笔记/ch9后端1/概述.md
     - 代码实践:
           - 运行环境配置: practice/env.md
     - 课后习题:
@@ -49,6 +74,10 @@ nav:
           - ch05-相机与图像: 课后习题/ch05-相机与图像.md
           - ch06-非线性优化: 课后习题/ch06-非线性优化.md
           - ch07-视觉里程计1: 课后习题/ch07-视觉里程计1.md
+    - 其他:
+          - 矩阵分解: 其他/矩阵分解.md
+          - 矩阵相似变换的意义: 其他/矩阵相似变换的意义.md
+
 
 # 右上角展示GitHub仓库
 repo_url: https://github.com/Gongzihang6/slambook2
@@ -57,12 +86,20 @@ edit_uri: edit/master/docs/ # 允许读者点击编辑按钮跳转到源码
 
 # 插件配置
 plugins:
-    - callouts
+    - caption     # 显示图片题注
+    - callouts    # 让mkdocs识别>[!note]语法
     - search
     - git-revision-date-localized:
-          type: date
-          enable_creation_date: true
-
+            type: date
+            enable_creation_date: true
+    - glightbox:
+            touchNavigation: true
+            loop: false
+            effect: zoom # zoom, fade, etc.
+            width: 100%
+            height: auto
+            zoomable: true
+            draggable: true
 extra:
     # analytics:
     #   provider: google # ...你的谷歌分析配置
@@ -83,5 +120,5 @@ extra:
 
 # 注册自定义 CSS 文件
 extra_css:
-    - docs/stylesheets/extra.css
+    - stylesheets/extra.css
 copyright: Copyright &copy; 2025 Gongzihang6

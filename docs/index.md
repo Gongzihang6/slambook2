@@ -1,3 +1,36 @@
+<p class="theme-switcher-title">
+  🎨 换个颜色，换个心情
+</p>
+
+<div class="color-picker-container">
+  <button class="color-btn" data-color="red" style="background-color: #ef5350;">red</button>
+  <button class="color-btn" data-color="pink" style="background-color: #ec407a;">pink</button>
+  <button class="color-btn" data-color="purple" style="background-color: #ab47bc;">purple</button>
+  <button class="color-btn" data-color="indigo" style="background-color: #5c6bc0;">indigo</button>
+  <button class="color-btn" data-color="blue" style="background-color: #42a5f5;">blue</button>
+  <button class="color-btn" data-color="cyan" style="background-color: #26c6da;">cyan</button>
+  <button class="color-btn" data-color="teal" style="background-color: #26a69a;">teal</button>
+  <button class="color-btn" data-color="green" style="background-color: #66bb6a;">green</button>
+  <button class="color-btn" data-color="orange" style="background-color: #ffa726;">orange</button>
+  <button class="color-btn" data-color="brown" style="background-color: #8d6e63;">brown</button>
+  <button class="color-btn" data-color="grey" style="background-color: #bdbdbd;">grey</button>
+  <button class="color-btn" data-color="black" style="background-color: #000000;">black</button>
+</div>
+
+<script>
+  var buttons = document.querySelectorAll('.color-btn');
+  var body = document.querySelector('body');
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var color = this.getAttribute('data-color');
+      body.setAttribute('data-md-color-primary', color);
+      localStorage.setItem('user-color-preference', color);
+    });
+  });
+  var savedColor = localStorage.getItem('user-color-preference');
+  if (savedColor) { body.setAttribute('data-md-color-primary', savedColor); }
+</script>
+
 # 视觉 SLAM 十四讲 · 学习与实践
 
 > **从理论到代码，构建完整的 SLAM 知识体系。**

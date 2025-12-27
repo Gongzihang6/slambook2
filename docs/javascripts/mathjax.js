@@ -22,3 +22,7 @@ window.MathJax = {
         }
     }
 };
+
+document.addEventListener("DOMContentSwitch", function () {
+    MathJax.typesetPromise(); // 如果使用 MathJax 3
+});
