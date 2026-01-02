@@ -4,52 +4,52 @@
 #include <pangolin/pangolin.h>
 
 using namespace std;
+using namespace cv;
 
 typedef vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> VecVector2d;
 
 // Camera intrinsics
 double fx = 718.856, fy = 718.856, cx = 607.1928, cy = 185.2157;
 // baseline
-double baseline = 0.573;
+double baseline = 0.573;    // 双目基线，用于从视差图恢复深度
 // paths
-string left_file = "./left.png";
-string disparity_file = "./disparity.png";
-boost::format fmt_others("./%06d.png");    // other files
+string left_file = "../left.png";
+string disparity_file = "../disparity.png";
+boost::format fmt_others("../%06d.png");    // other files
 
 // useful typedefs
-typedef Eigen::Matrix<double, 6, 6> Matrix6d;
-typedef Eigen::Matrix<double, 2, 6> Matrix26d;
-typedef Eigen::Matrix<double, 6, 1> Vector6d;
+typedef Eigen::Matrix<double, 6, 6> Matrix6d;       // Hessian 矩阵大小
+typedef Eigen::Matrix<double, 2, 6> Matrix26d;      // 像素对位姿的雅可比
+typedef Eigen::Matrix<double, 6, 1> Vector6d;       // 优化变量（se3）相机位姿
 
-/// class for accumulator jacobians in parallel
+// class for accumulator jacobians in parallel
 class JacobianAccumulator {
 public:
-    JacobianAccumulator(
-        const cv::Mat &img1_,
-        const cv::Mat &img2_,
-        const VecVector2d &px_ref_,
-        const vector<double> depth_ref_,
-        Sophus::SE3d &T21_) :
+    JacobianAccumulator(const cv::Mat &img1_,
+                        const cv::Mat &img2_,
+                        const VecVector2d &px_ref_,
+                        const vector<double> depth_ref_,
+                        Sophus::SE3d &T21_) :
         img1(img1_), img2(img2_), px_ref(px_ref_), depth_ref(depth_ref_), T21(T21_) {
         projection = VecVector2d(px_ref.size(), Eigen::Vector2d(0, 0));
     }
 
-    /// accumulate jacobians in a range
+    // accumulate jacobians in a range
     void accumulate_jacobian(const cv::Range &range);
 
-    /// get hessian matrix
+    // get hessian matrix
     Matrix6d hessian() const { return H; }
 
-    /// get bias
+    // get bias
     Vector6d bias() const { return b; }
 
-    /// get total cost
+    // get total cost
     double cost_func() const { return cost; }
 
-    /// get projected points
+    // get projected points
     VecVector2d projected_points() const { return projection; }
 
-    /// reset h, b, cost to zero
+    // reset h, b, cost to zero
     void reset() {
         H = Matrix6d::Zero();
         b = Vector6d::Zero();
@@ -102,7 +102,7 @@ void DirectPoseEstimationSingleLayer(
     Sophus::SE3d &T21
 );
 
-// bilinear interpolation
+// 使用双线性插值获取浮点像素坐标的像素值
 inline float GetPixelValue(const cv::Mat &img, float x, float y) {
     // boundary check
     if (x < 0) x = 0;
@@ -125,6 +125,7 @@ int main(int argc, char **argv) {
     cv::Mat left_img = cv::imread(left_file, 0);
     cv::Mat disparity_img = cv::imread(disparity_file, 0);
 
+    // 这里直接从第一幅图（参考帧）中随机选择像素点，然后从对齐的深度图中读取深度值，获取到真实尺度的3D坐标
     // let's randomly pick pixels in the first image and generate some 3d points in the first image's frame
     cv::RNG rng;
     int nPoints = 2000;
@@ -137,7 +138,7 @@ int main(int argc, char **argv) {
         int x = rng.uniform(boarder, left_img.cols - boarder);  // don't pick pixels close to boarder
         int y = rng.uniform(boarder, left_img.rows - boarder);  // don't pick pixels close to boarder
         int disparity = disparity_img.at<uchar>(y, x);
-        double depth = fx * baseline / disparity; // you know this is disparity to depth
+        double depth = fx * baseline / disparity;   // 通过视差图的视差和基线真实尺寸，计算出真实深度
         depth_ref.push_back(depth);
         pixels_ref.push_back(Eigen::Vector2d(x, y));
     }
@@ -154,23 +155,28 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void DirectPoseEstimationSingleLayer(
-    const cv::Mat &img1,
-    const cv::Mat &img2,
-    const VecVector2d &px_ref,
-    const vector<double> depth_ref,
-    Sophus::SE3d &T21) {
+/**
+ * 单层直接法的位姿估计实现
+ * 实现原理：首先计算参考帧中特征像素点的3D坐标，然后根据变换矩阵（李代数）变换到当前帧坐标系下
+ *          然后计算3D坐标在当前帧图像中的投影像素点，计算参考帧和当前帧中patch块内的像素点之间的误差，
+ *          通过最小化这个灰度误差，求解变换矩阵（李代数），优化方法是高斯牛顿法
+ */
+void DirectPoseEstimationSingleLayer(const cv::Mat &img1,               // 参考图
+                                    const cv::Mat &img2,                // 当前图
+                                    const VecVector2d &px_ref,          // 参考图特征像素点
+                                    const vector<double> depth_ref,     // 参考图特征像素点深度
+                                    Sophus::SE3d &T21) {                // 当前图到参考图的变换李代数初始值
 
-    const int iterations = 10;
+    const int iterations = 10;  // 最大迭代次数
     double cost = 0, lastCost = 0;
     auto t1 = chrono::steady_clock::now();
-    JacobianAccumulator jaco_accu(img1, img2, px_ref, depth_ref, T21);
+    JacobianAccumulator jaco_accu(img1, img2, px_ref, depth_ref, T21);  // 自定义累加器类，用于并行计算雅可比
 
     for (int iter = 0; iter < iterations; iter++) {
         jaco_accu.reset();
         cv::parallel_for_(cv::Range(0, px_ref.size()),
                           std::bind(&JacobianAccumulator::accumulate_jacobian, &jaco_accu, std::placeholders::_1));
-        Matrix6d H = jaco_accu.hessian();
+        Matrix6d H = jaco_accu.hessian();   // 获取当前图中所有特征像素点的灰度误差的海塞矩阵
         Vector6d b = jaco_accu.bias();
 
         // solve update and put it into estimation
@@ -203,7 +209,7 @@ void DirectPoseEstimationSingleLayer(
 
     // plot the projected pixels here
     cv::Mat img2_show;
-    cv::cvtColor(img2, img2_show, CV_GRAY2BGR);
+    cv::cvtColor(img2, img2_show, COLOR_GRAY2BGR);
     VecVector2d projection = jaco_accu.projected_points();
     for (size_t i = 0; i < px_ref.size(); ++i) {
         auto p_ref = px_ref[i];
@@ -218,44 +224,57 @@ void DirectPoseEstimationSingleLayer(
     cv::waitKey();
 }
 
+/**
+ * 实现了直接法的残差定义和雅可比导数
+ * 函数 accumulate_jacobian 的设计是为了多线程并行运行的。
+ * 它只处理分配给它的那一部分点（由 range 指定），算出局部的 $H$ 和 $b$，最后再加锁合并到全局结果中。
+ * 
+ * 这个函数是并行运行的（被 cv::parallel_for_ 调用），
+ * 每个线程必须先在自己的内存里算累加，不能直接去改写类的成员变量 H 和 b，否则会发生严重的数据竞争（Data Race）
+ */
 void JacobianAccumulator::accumulate_jacobian(const cv::Range &range) {
 
     // parameters
-    const int half_patch_size = 1;
-    int cnt_good = 0;
-    Matrix6d hessian = Matrix6d::Zero();
-    Vector6d bias = Vector6d::Zero();
-    double cost_tmp = 0;
+    const int half_patch_size = 1;          // 半窗口大小=1，表示 3x3 的 patch
+    int cnt_good = 0;                       // 记录有多少个点有效（投影在图像内）
+    Matrix6d hessian = Matrix6d::Zero();    // 局部 H 矩阵 (6x6)
+    Vector6d bias = Vector6d::Zero();       // 局部 b 向量 (6x1)
+    double cost_tmp = 0;                    // 局部误差平方和
 
     for (size_t i = range.start; i < range.end; i++) {
 
-        // compute the projection in the second image
+        // 根据参考帧中特征点像素坐标计算特征点在参考帧相机坐标系中的3D坐标
         Eigen::Vector3d point_ref =
             depth_ref[i] * Eigen::Vector3d((px_ref[i][0] - cx) / fx, (px_ref[i][1] - cy) / fy, 1);
+        // 特征点3D坐标乘以参考帧到当前帧的变换矩阵得到3D特征点在当前帧相机坐标系中的3D坐标
         Eigen::Vector3d point_cur = T21 * point_ref;
-        if (point_cur[2] < 0)   // depth invalid
+        if (point_cur[2] < 0)   // 检查深度是否合法
             continue;
 
+        // 根据当前帧坐标系下3D点计算当前帧中对应特征点的像素坐标
         float u = fx * point_cur[0] / point_cur[2] + cx, v = fy * point_cur[1] / point_cur[2] + cy;
+        // 如果3D点投影到当前帧图像中过于靠近边缘，则放弃这个约束，因为边缘点取patch会越界
         if (u < half_patch_size || u > img2.cols - half_patch_size || v < half_patch_size ||
             v > img2.rows - half_patch_size)
-            continue;
+            continue;   // 丢弃参考帧中这个特征点，继续遍历下一个特征点
 
-        projection[i] = Eigen::Vector2d(u, v);
+        projection[i] = Eigen::Vector2d(u, v);      // 保存用于可视化
         double X = point_cur[0], Y = point_cur[1], Z = point_cur[2],
             Z2 = Z * Z, Z_inv = 1.0 / Z, Z2_inv = Z_inv * Z_inv;
-        cnt_good++;
+        cnt_good++; // 参考帧中的特征点投影到参考帧坐标系，再变换到当前帧坐标系下的3D点，再投影到当前帧图像中，如果投影位置合适，则认为有效
 
-        // and compute error and jacobian
+        // 计算灰度误差和雅可比导数
+
+        // 遍历patch内的所有像素
         for (int x = -half_patch_size; x <= half_patch_size; x++)
             for (int y = -half_patch_size; y <= half_patch_size; y++) {
-
+                // 参考帧像素点patch和当前帧对应像素点patch内所有像素的灰度差之和，作为误差
                 double error = GetPixelValue(img1, px_ref[i][0] + x, px_ref[i][1] + y) -
                                GetPixelValue(img2, u + x, v + y);
-                Matrix26d J_pixel_xi;
-                Eigen::Vector2d J_img_pixel;
-
-                J_pixel_xi(0, 0) = fx * Z_inv;
+                Matrix26d J_pixel_xi;   // 当前帧特征点的像素坐标对当前帧相机位姿的雅可比导数
+                Eigen::Vector2d J_img_pixel;    // 图像梯度
+                // 它描述了：如果相机稍微动一下（旋转或平移），像素点会在图像上移动多少
+                J_pixel_xi(0, 0) = fx * Z_inv;  // 参见书上式（8.18）
                 J_pixel_xi(0, 1) = 0;
                 J_pixel_xi(0, 2) = -fx * X * Z2_inv;
                 J_pixel_xi(0, 3) = -fx * X * Y * Z2_inv;
@@ -269,13 +288,14 @@ void JacobianAccumulator::accumulate_jacobian(const cv::Range &range) {
                 J_pixel_xi(1, 4) = fy * X * Y * Z2_inv;
                 J_pixel_xi(1, 5) = fy * X * Z_inv;
 
+                // 中心差分法计算图像梯度
                 J_img_pixel = Eigen::Vector2d(
                     0.5 * (GetPixelValue(img2, u + 1 + x, v + y) - GetPixelValue(img2, u - 1 + x, v + y)),
                     0.5 * (GetPixelValue(img2, u + x, v + 1 + y) - GetPixelValue(img2, u + x, v - 1 + y))
                 );
 
                 // total jacobian
-                Vector6d J = -1.0 * (J_img_pixel.transpose() * J_pixel_xi).transpose();
+                Vector6d J = -1.0 * (J_img_pixel.transpose() * J_pixel_xi).transpose(); // 6*1
 
                 hessian += J * J.transpose();
                 bias += -error * J;
@@ -283,12 +303,13 @@ void JacobianAccumulator::accumulate_jacobian(const cv::Range &range) {
             }
     }
 
+    // 线程同步与合并，只要当前线程内有好点，则当前线程内的H和b就会加入全局的H和b中
     if (cnt_good) {
         // set hessian, bias and cost
-        unique_lock<mutex> lck(hessian_mutex);
-        H += hessian;
-        b += bias;
-        cost += cost_tmp / cnt_good;
+        unique_lock<mutex> lck(hessian_mutex);  // 【加锁】
+        H += hessian;   // 将局部 H 累加到全局 H
+        b += bias;      // 将局部 b 累加到全局 b
+        cost += cost_tmp / cnt_good;    // 更新平均误差
     }
 }
 
