@@ -2,6 +2,9 @@
 点云库PCL从入门到精通.pdf
 *.pcd
 *.png
+ch12/dense_mono/test_data/
+
+
 
 # Prerequisites
 *.d

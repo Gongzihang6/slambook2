@@ -10,20 +10,17 @@ using namespace cv;
 using namespace std;
 
 
-int main( int argc, char** argv )
-{
+int main( int argc, char** argv ){
     string dataset_dir = argv[1];
-    ifstream fin ( dataset_dir+"/associate.txt" );
-    if ( !fin )
-    {
+    ifstream fin ( dataset_dir + "/associate.txt" );
+    if ( !fin ){
         cout<<"please generate the associate file called associate.txt!"<<endl;
         return 1;
     }
 
     vector<string> rgb_files, depth_files;
     vector<double> rgb_times, depth_times;
-    while ( !fin.eof() )
-    {
+    while ( !fin.eof() ){
         string rgb_time, rgb_file, depth_time, depth_file;
         fin>>rgb_time>>rgb_file>>depth_time>>depth_file;
         rgb_times.push_back ( atof ( rgb_time.c_str() ) );
@@ -40,8 +37,7 @@ int main( int argc, char** argv )
     vector<Mat> descriptors;
     Ptr< Feature2D > detector = ORB::create();
     int index = 1;
-    for ( string rgb_file:rgb_files )
-    {
+    for ( string rgb_file:rgb_files ){
         Mat image = imread(rgb_file);
         vector<KeyPoint> keypoints; 
         Mat descriptor;

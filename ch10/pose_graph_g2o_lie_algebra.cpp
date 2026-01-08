@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <Eigen/Core>
+#include <memory>
 
 #include <g2o/core/base_vertex.h>
 #include <g2o/core/base_binary_edge.h>
@@ -146,7 +147,7 @@ int main(int argc, char **argv) {
     typedef g2o::BlockSolver<g2o::BlockSolverTraits<6, 6>> BlockSolverType;
     typedef g2o::LinearSolverEigen<BlockSolverType::PoseMatrixType> LinearSolverType;
     auto solver = new g2o::OptimizationAlgorithmLevenberg(
-        g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
+        std::make_unique<BlockSolverType>(std::make_unique<LinearSolverType>()));
     g2o::SparseOptimizer optimizer;     // 图模型
     optimizer.setAlgorithm(solver);   // 设置求解器
     optimizer.setVerbose(true);       // 打开调试输出

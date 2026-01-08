@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(bundle_adjustment)
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "-O3 -std=c++11")
+set(CMAKE_CXX_FLAGS "-O3 -std=c++17")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -12,7 +12,8 @@ Find_Package(Ceres REQUIRED)
 Find_Package(Sophus REQUIRED)
 Find_Package(CSparse REQUIRED)
 
-SET(G2O_LIBS g2o_csparse_extension g2o_stuff g2o_core cxsparse)
+# 使用 ${G2O_SOLVER_CHOLMOD} 变量，它包含了正确的路径
+SET(G2O_LIBS ${G2O_SOLVER_CHOLMOD} ${G2O_STUFF_LIBRARY} ${G2O_CORE_LIBRARY})
 
 include_directories(${PROJECT_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR})
 

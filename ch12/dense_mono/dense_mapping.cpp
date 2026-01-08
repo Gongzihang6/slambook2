@@ -4,19 +4,20 @@
 
 using namespace std;
 
-#include <boost/timer.hpp>
+#include <boost/timer.hpp>  // 计时工具 (已过时，但书中代码用了)
 
-// for sophus
+// for sophus: 李代数库，用于处理 SE(3) 位姿
 #include <sophus/se3.hpp>
 
 using Sophus::SE3d;
 
-// for eigen
+// for eigen: 线性代数库，处理矩阵和向量
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 using namespace Eigen;
 
+// for opencv: 图像处理
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -31,25 +32,26 @@ using namespace cv;
 
 // ------------------------------------------------------------------
 // parameters
-const int boarder = 20;         // 边缘宽度
+const int boarder = 20;         // 边缘宽度，图像边缘的像素通常质量差或无法匹配，直接忽略
 const int width = 640;          // 图像宽度
 const int height = 480;         // 图像高度
 const double fx = 481.2f;       // 相机内参
 const double fy = -480.0f;
 const double cx = 319.5f;
 const double cy = 239.5f;
-const int ncc_window_size = 3;    // NCC 取的窗口半宽度
+const int ncc_window_size = 3;    // NCC匹配窗口半径。实际窗口大小是 (2*3+1) = 7x7
 const int ncc_area = (2 * ncc_window_size + 1) * (2 * ncc_window_size + 1); // NCC窗口面积
-const double min_cov = 0.1;     // 收敛判定：最小方差
-const double max_cov = 10;      // 发散判定：最大方差
+const double min_cov = 0.1;     // 收敛判定：当深度方差小于 0.1 时，认为该像素深度已确信，不再更新
+const double max_cov = 10;      // 发散判定：方差太大说明完全测不准，放弃该点
 
 // ------------------------------------------------------------------
 // 重要的函数
 /// 从 REMODE 数据集读取数据
+// 修改后 (请直接替换为这一段)
 bool readDatasetFiles(
     const string &path,
     vector<string> &color_image_files,
-    vector<SE3d> &poses,
+    vector<SE3d, Eigen::aligned_allocator<SE3d>> &poses, 
     cv::Mat &ref_depth
 );
 
@@ -173,15 +175,22 @@ void evaludateDepth(const Mat &depth_truth, const Mat &depth_estimate);
 // ------------------------------------------------------------------
 
 
+// ./dense_mapping ../../dense_mono/test_data
 int main(int argc, char **argv) {
     if (argc != 2) {
         cout << "Usage: dense_mapping path_to_test_dataset" << endl;
         return -1;
     }
 
+    
+
     // 从数据集读取数据
     vector<string> color_image_files;
-    vector<SE3d> poses_TWC;
+    // vector<SE3d> poses_TWC;
+    // 【C++知识点】Eigen::aligned_allocator
+    // Eigen 的固定大小向量化类型（如 Vector3d, Matrix4d）需要 16 字节对齐。
+    // 标准 STL vector 可能会破坏这种对齐，导致段错误。必须指定对齐分配器。
+    vector<SE3d, Eigen::aligned_allocator<SE3d>> poses_TWC;
     Mat ref_depth;
     bool ret = readDatasetFiles(argv[1], color_image_files, poses_TWC, ref_depth);
     if (ret == false) {
@@ -190,21 +199,44 @@ int main(int argc, char **argv) {
     }
     cout << "read total " << color_image_files.size() << " files." << endl;
 
-    // 第一张图
-    Mat ref = imread(color_image_files[0], 0);                // gray-scale image
-    SE3d pose_ref_TWC = poses_TWC[0];
-    double init_depth = 3.0;    // 深度初始值
-    double init_cov2 = 3.0;     // 方差初始值
-    Mat depth(height, width, CV_64F, init_depth);             // 深度图
-    Mat depth_cov2(height, width, CV_64F, init_cov2);         // 深度图方差
+    // 读取第一帧作为“参考帧”(Reference Frame)
+    Mat ref = imread(color_image_files[0], 0);       // 0 表示以灰度模式读取
+
+    // 改动 2: 增加空指针检查
+    if (ref.data == nullptr) {
+        cout << "Fatal Error: Reference image is empty! Path: " << color_image_files[0] << endl;
+        return -1;
+    }
+
+    SE3d pose_ref_TWC = poses_TWC[0];   // 以参考帧的位姿为世界位姿（坐标系） T_WC
+    double init_depth = 3.0;    // 深度初始均值：假设所有像素都在 3米处
+    double init_cov2 = 3.0;     // 深度初始方差：设得很大，表示非常不确定
+    Mat depth(height, width, CV_64F, init_depth);             // 均值图
+    Mat depth_cov2(height, width, CV_64F, init_cov2);         // 方差图
+    /**
+     * 深度滤波器原理: 我们把每个像素的深度看作一个高斯分布 $N(\mu, \sigma^2)$。初始时我们不知道深度是多少，
+     * 所以给一个大概的均值 $\mu=3.0$，并给一个很大的方差 $\sigma^2=3.0$（表示很不确定）。随着观测增多，方差会越来越小（收敛）。
+     */
 
     for (int index = 1; index < color_image_files.size(); index++) {
+        // 读取当前帧 (Current Frame)
         cout << "*** loop " << index << " ***" << endl;
         Mat curr = imread(color_image_files[index], 0);
-        if (curr.data == nullptr) continue;
-        SE3d pose_curr_TWC = poses_TWC[index];
+        if (curr.data == nullptr) continue;     // 忽略空指针
+        SE3d pose_curr_TWC = poses_TWC[index];  // 获取当前帧的位姿
+
+        // 【SLAM知识点】坐标系变换
+        // 我们需要计算“参考帧”到“当前帧”的相对变换 T_C_R (T_Current_Reference)
+        // 公式：T_C_R = T_C_W * T_W_R = T_WC^{-1} * T_WR       T_W_R（T_WR）表示参考帧到世界坐标系的变换
+        // 这里的 poses_TWC 存储的是 T_W_C (世界坐标系到当前帧的变换)，T_W_C的逆，也就是T_C_W就是当前帧到世界坐标系的变换
+        // pose_ref_TWC（也就是T_W_R） 存储的是世界坐标系到参考帧的变换矩阵
+        // 简单来说，参考帧到当前帧的变换，就是参考帧到世界坐标系的变换矩阵 * 世界坐标系到当前帧的变换矩阵
         SE3d pose_T_C_R = pose_curr_TWC.inverse() * pose_ref_TWC;   // 坐标转换关系： T_C_W * T_W_R = T_C_R
+
+        // 调用核心更新函数
         update(ref, curr, pose_T_C_R, depth, depth_cov2);
+
+        // 评测深度
         evaludateDepth(ref_depth, depth);
         plotDepth(ref_depth, depth);
         imshow("image", curr);
@@ -213,15 +245,28 @@ int main(int argc, char **argv) {
 
     cout << "estimation returns, saving depth map ..." << endl;
     imwrite("depth.png", depth);
-    cout << "done." << endl;
 
+    cv::FileStorage fs("depth.xml", cv::FileStorage::WRITE);
+    fs << "depth" << depth;
+    fs.release();
+    cout << "Depth map saved to depth.xml" << endl;
+
+
+    // 将深度图归一化到 0~255 之间，这样原本 2.0 的值可能会变成 128 (灰色)，就能看清了
+    cv::Mat depth_visual;
+    // NORM_MINMAX 会自动把图中的最小值映射为0，最大值映射为255
+    cv::normalize(depth, depth_visual, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+    cv::imwrite("depth_visual.png", depth_visual);
+    cout << " -> Saved visualization to 'depth_visual.png' (Normalized)" << endl;
+
+    cout << "Done." << endl;
     return 0;
 }
 
 bool readDatasetFiles(
     const string &path,
     vector<string> &color_image_files,
-    std::vector<SE3d> &poses,
+    vector<SE3d, Eigen::aligned_allocator<SE3d>> &poses, // 这里也要改！
     cv::Mat &ref_depth) {
     ifstream fin(path + "/first_200_frames_traj_over_table_input_sequence.txt");
     if (!fin) return false;
@@ -258,12 +303,19 @@ bool readDatasetFiles(
 
 // 对整个深度图进行更新
 bool update(const Mat &ref, const Mat &curr, const SE3d &T_C_R, Mat &depth, Mat &depth_cov2) {
-    for (int x = boarder; x < width - boarder; x++)
+    // 【关键】加上这一行，开启多线程并行计算
+    // 这会让 x 的循环被分配到不同的 CPU 核心上执行
+    #pragma omp parallel for
+    for (int x = boarder; x < width - boarder; x++){
         for (int y = boarder; y < height - boarder; y++) {
             // 遍历每个像素
+
+            // 1. 检查是否需要更新：如果方差太小(已收敛)或太大(已发散)，则跳过
             if (depth_cov2.ptr<double>(y)[x] < min_cov || depth_cov2.ptr<double>(y)[x] > max_cov) // 深度已收敛或发散
                 continue;
-            // 在极线上搜索 (x,y) 的匹配
+
+            // 2. 极线搜索：试图在当前帧找到匹配点 pt_curr
+            // 传入：当前深度均值 depth.ptr...[x] 和 标准差 sqrt(cov)
             Vector2d pt_curr;
             Vector2d epipolar_direction;
             bool ret = epipolarSearch(
@@ -283,9 +335,11 @@ bool update(const Mat &ref, const Mat &curr, const SE3d &T_C_R, Mat &depth, Mat 
             // 取消该注释以显示匹配
             // showEpipolarMatch(ref, curr, Vector2d(x, y), pt_curr);
 
-            // 匹配成功，更新深度图
+            // 3. 深度融合：如果找到了匹配，用三角化计算新深度，并更新高斯分布
             updateDepthFilter(Vector2d(x, y), pt_curr, T_C_R, epipolar_direction, depth, depth_cov2);
         }
+    }
+    return true; // <--- 加上这一行！
 }
 
 // 极线搜索
@@ -367,35 +421,46 @@ double NCC(
     return numerator / sqrt(demoniator1 * demoniator2 + 1e-10);   // 防止分母出现零
 }
 
-bool updateDepthFilter(
-    const Vector2d &pt_ref,
-    const Vector2d &pt_curr,
-    const SE3d &T_C_R,
-    const Vector2d &epipolar_direction,
-    Mat &depth,
-    Mat &depth_cov2) {
+// 这个函数利用对极几何约束，在当前帧的一条线上寻找与参考帧像素匹配的点
+bool updateDepthFilter(const Vector2d &pt_ref,      // 参考帧的像素点
+                        const Vector2d &pt_curr,    // 当前帧的像素点
+                        const SE3d &T_C_R,          // 参考帧到当前帧的变换
+                        const Vector2d &epipolar_direction,     // 极线方向
+                        Mat &depth,                             // 深度均值
+                        Mat &depth_cov2) {                      // 深度协方差
     // 不知道这段还有没有人看
     // 用三角化计算深度
-    SE3d T_R_C = T_C_R.inverse();
-    Vector3d f_ref = px2cam(pt_ref);
-    f_ref.normalize();
-    Vector3d f_curr = px2cam(pt_curr);
-    f_curr.normalize();
+    SE3d T_R_C = T_C_R.inverse();   // 当前帧到参考帧的变换
 
-    // 方程
+    // 将参考帧和当前帧的像素坐标转相机归一化坐标: P_cam = K^{-1} * p_pixel
+    Vector3d f_ref = px2cam(pt_ref);
+    f_ref.normalize();  // 归一化为单位方向向量，参考帧射线方向
+    Vector3d f_curr = px2cam(pt_curr);
+    f_curr.normalize();     // 当前帧射线方向
+
+    // 三角化：已知同一个 3D 点在两张图上的投影方向（射线），求这两个射线的交点（即 3D 点的坐标）
+    // 建立方程组，求解两帧下的深度 d_ref 和 d_cur
+    // 实际上两条射线在 3D 空间几乎不可能相交（有噪声），所以求的是“公垂线中点”
+    // 这里使用了克莱姆法则或直接求逆解 2x2 线性方程
+    // 下式左右两侧都是表示的“同一个3D点的3维坐标”
     // d_ref * f_ref = d_cur * ( R_RC * f_cur ) + t_RC
     // f2 = R_RC * f_cur
-    // 转化成下面这个矩阵方程组
+    // 由于噪声存在，两条射线在空间中通常无法完美相交（异面直线）。
+    // 因此我们求公垂线的中点作为最优解（最小二乘解）转化成下面这个矩阵方程组
     // => [ f_ref^T f_ref, -f_ref^T f2 ] [d_ref]   [f_ref^T t]
     //    [ f_2^T f_ref, -f2^T f2      ] [d_cur] = [f2^T t   ]
+
+    // 2. 构建 Ax=b 方程组
     Vector3d t = T_R_C.translation();
-    Vector3d f2 = T_R_C.so3() * f_curr;
-    Vector2d b = Vector2d(t.dot(f_ref), t.dot(f2));
+    Vector3d f2 = T_R_C.so3() * f_curr;     // 旋转后的当前帧射线
+    Vector2d b = Vector2d(t.dot(f_ref), t.dot(f2));     // 等式右边 [f_ref^T t, f2^T t]
     Matrix2d A;
     A(0, 0) = f_ref.dot(f_ref);
     A(0, 1) = -f_ref.dot(f2);
     A(1, 0) = -A(0, 1);
     A(1, 1) = -f2.dot(f2);
+
+    // 3. 求解深度 d_ref (ans[0]) 和 d_cur (ans[1])
     Vector2d ans = A.inverse() * b;
     Vector3d xm = ans[0] * f_ref;           // ref 侧的结果
     Vector3d xn = t + ans[1] * f2;          // cur 结果
@@ -403,12 +468,16 @@ bool updateDepthFilter(
     double depth_estimation = p_esti.norm();   // 深度值
 
     // 计算不确定性（以一个像素为误差）
+    // 如果匹配有一个像素的误差，算出来的深度会偏差多少？这个偏差就是这次观测的方差（不确定性）
     Vector3d p = f_ref * depth_estimation;
     Vector3d a = p - t;
     double t_norm = t.norm();
     double a_norm = a.norm();
     double alpha = acos(f_ref.dot(t) / t_norm);
     double beta = acos(-a.dot(t) / (a_norm * t_norm));
+
+    // 给当前帧匹配的像素点模拟一个像素的误差
+    // pt_curr + epipolar_direction 表示在极线上移动一个像素
     Vector3d f_curr_prime = px2cam(pt_curr + epipolar_direction);
     f_curr_prime.normalize();
     double beta_prime = acos(f_curr_prime.dot(-t) / t_norm);

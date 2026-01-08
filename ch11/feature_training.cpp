@@ -13,21 +13,20 @@ using namespace std;
  * 本节演示了如何根据data/目录下的十张图训练字典
  * ************************************************/
 
+ // ./feature_training 
 int main( int argc, char** argv ) {
     // read the image 
     cout<<"reading images... "<<endl;
     vector<Mat> images; 
-    for ( int i=0; i<10; i++ )
-    {
-        string path = "./data/"+to_string(i+1)+".png";
+    for ( int i=0; i<10; i++ ){
+        string path = "../data/"+to_string(i+1)+".png";
         images.push_back( imread(path) );
     }
     // detect ORB features
     cout<<"detecting ORB features ... "<<endl;
     Ptr< Feature2D > detector = ORB::create();
     vector<Mat> descriptors;
-    for ( Mat& image:images )
-    {
+    for ( Mat& image:images ){
         vector<KeyPoint> keypoints; 
         Mat descriptor;
         detector->detectAndCompute( image, Mat(), keypoints, descriptor );
