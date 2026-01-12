@@ -17,7 +17,7 @@ struct Feature;
  * 每一帧分配独立id，关键帧分配关键帧ID
  */
 struct Frame {
-   public:
+public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Frame> Ptr;
 
@@ -34,7 +34,7 @@ struct Frame {
     // corresponding features in right image, set to nullptr if no corresponding
     std::vector<std::shared_ptr<Feature>> features_right_;
 
-   public:  // data members
+public:  // data members
     Frame() {}
 
     Frame(long id, double time_stamp, const SE3 &pose, const Mat &left,
@@ -51,10 +51,10 @@ struct Frame {
         pose_ = pose;
     }
 
-    /// 设置关键帧并分配并键帧id
+    // 设置关键帧并分配并键帧id
     void SetKeyFrame();
 
-    /// 工厂构建模式，分配id 
+    // 工厂构建模式，分配id 
     static std::shared_ptr<Frame> CreateFrame();
 };
 
