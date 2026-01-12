@@ -1,0 +1,2079 @@
+<!DOCTYPE html><html lang="zh" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Gongzihang6">
+      
+      
+        <link rel="canonical" href="https://Gongzihang6.github.io/slambook2/%E5%85%B6%E4%BB%96/Cholesky%E5%88%86%E8%A7%A3/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Cholesky 分解 - 视觉SLAM十四讲学习笔记</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cholesky" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-header__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            视觉SLAM十四讲学习笔记
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cholesky 分解
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="lime" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-tabs__link">
+          
+  
+  
+  学习笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../practice/env.md" class="md-tabs__link">
+          
+  
+  
+  代码实践
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-tabs__link">
+          
+  
+  
+  课后习题
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/" class="md-tabs__link">
+          
+  
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-nav__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    视觉SLAM十四讲学习笔记
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习笔记
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习笔记
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2讲-初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2讲-初识SLAM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4讲-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4讲-李群与李代数
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch4%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7讲-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7讲-视觉里程计1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    视觉里程计 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/ICP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D-3D：ICP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E7%82%B9%E4%BA%91%E5%85%B3%E9%94%AE%E7%82%B9%E4%B8%8E%E7%89%B9%E5%BE%81%E6%8F%8F%E8%BF%B0%E5%AD%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D 点云关键点
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4">
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第9讲-后端1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第9讲-后端1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch9%E5%90%8E%E7%AB%AF1/%E6%A6%82%E8%BF%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_5">
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第10讲-后端2
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第10讲-后端2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch10%E5%90%8E%E7%AB%AF2/%E4%BD%8D%E5%A7%BF%E5%9B%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    位姿图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6">
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第13讲-实践SLAM系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第13讲-实践SLAM系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/C%2B%2B%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++智能指针
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/cvcalcOpticalFlowPyrLK%E5%87%BD%E6%95%B0%E8%AF%A6%E8%A7%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cv::calcOpticalFlowPyrLK 函数详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    代码实践
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    代码实践
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/env.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行环境配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4">
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课后习题
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课后习题
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch03-三维空间刚体运动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch04-%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch04-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch05-%E7%9B%B8%E6%9C%BA%E4%B8%8E%E5%9B%BE%E5%83%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch05-相机与图像
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch06-%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch06-非线性优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch07-%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch07-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    其他
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵分解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%9F%A9%E9%98%B5%E7%9B%B8%E4%BC%BC%E5%8F%98%E6%8D%A2%E7%9A%84%E6%84%8F%E4%B9%89/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵相似变换的意义
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cholesky_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cholesky 分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cholesky 分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        分解原理与推导过程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l_11-l_21-l_31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一列 (计算 \(l_{11}, l_{21}, l_{31}\))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l_22-l_32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二列 (计算 \(l_{22}, l_{32}\))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l_33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三列 (计算 \(l_{33}\))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通用计算流程 (算法)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="通用计算流程 (算法)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        计算流程图解
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-slam-cholesky" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 为什么 SLAM 和优化中常用 Cholesky？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ldlt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LDLT 分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LDLT 分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么它能加速？（核心优势）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="为什么它能加速？（核心优势）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        \(A\). 利用了“对称性” (计算量减半)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        \(B\). 避免了“求逆” (数值稳定性与速度)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-cholesky" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        \(C\). 避免了“开平方” (相对于标准 Cholesky)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cholesky_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cholesky 分解的其他应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cholesky 分解的其他应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-monte-carlo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 生成多维相关的高斯随机变量 (Monte Carlo 模拟)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-unscented-kalman-filter-ukf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Unscented Kalman Filter (UKF, 无迹卡尔曼滤波)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-log-likelihood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 快速计算行列式与对数似然 (Log-Likelihood)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-square-root-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 提高数值稳定性的“平方根滤波” (Square Root Filters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-whitening-decorrelation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 最小二乘中的“去相关” (Whitening / Decorrelation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="cholesky">Cholesky 分解<a class="headerlink" href="#cholesky" title="Permanent link">¶</a></h1>
+<h2 id="cholesky_1">Cholesky 分解<a class="headerlink" href="#cholesky_1" title="Permanent link">¶</a></h2>
+<p>Cholesky 分解是线性代数中一种非常重要且高效的矩阵分解方法，可以通俗的理解为矩阵世界里的开平方运算。</p>
+<p>定义：对于一个对称正定矩阵（Symmetric Positive Definite，SPD）<span class="arithmatex">\(A\)</span>，Cholesky 分解将其分解为一个下三角矩阵 <span class="arithmatex">\(L\)</span> 和它的转置 <span class="arithmatex">\(L^T\)</span> 的乘积：</p>
+<div class="arithmatex">\[
+A = LL^T
+\]</div>
+<p>其中：<span class="arithmatex">\(A\)</span> 必须是对称的（<span class="arithmatex">\(A=A^T\)</span>）且正定的（所有特征值 &gt; 0，或者说对于任意非零向量 <span class="arithmatex">\(x\)</span>，都有 <span class="arithmatex">\(x^TAx&gt;0\)</span>）；<span class="arithmatex">\(L\)</span> 是一个下三角矩阵，且其对角线元素必须严格大于 0。</p>
+<p><strong>为什么叫“矩阵开平方”？</strong> 在标量数学中，如果我们有 <span class="arithmatex">\(a = l \cdot l = l^2\)</span>，那么 <span class="arithmatex">\(l = \sqrt{a}\)</span>。 在矩阵中，<span class="arithmatex">\(A = L L^T\)</span> 的形式非常像 <span class="arithmatex">\(l^2\)</span>，所以 <span class="arithmatex">\(L\)</span> 常被称为 <span class="arithmatex">\(A\)</span> 的“平方根矩阵”。</p>
+<h3 id="_1">分解原理与推导过程<a class="headerlink" href="#_1" title="Permanent link">¶</a></h3>
+<p>为了理解它是怎么算出来的，我们以一个简单的 <span class="arithmatex">\(3 \times 3\)</span> 矩阵为例。假设我们有方程 <span class="arithmatex">\(A = L L^T\)</span>：</p>
+<div class="arithmatex">\[
+\begin{bmatrix} a_{11} &amp; a_{12} &amp; a_{13} \\ a_{21} &amp; a_{22} &amp; a_{23} \\ a_{31} &amp; a_{32} &amp; a_{33} \end{bmatrix} = \begin{bmatrix} l_{11} &amp; 0 &amp; 0 \\ l_{21} &amp; l_{22} &amp; 0 \\ l_{31} &amp; l_{32} &amp; l_{33} \end{bmatrix} \begin{bmatrix} l_{11} &amp; l_{21} &amp; l_{31} \\ 0 &amp; l_{22} &amp; l_{32} \\ 0 &amp; 0 &amp; l_{33} \end{bmatrix}
+\]</div>
+<p>我们通过矩阵乘法把右边展开，并与左边的 <span class="arithmatex">\(A\)</span> 对应元素相等，就能逐个解出 <span class="arithmatex">\(l_{ij}\)</span>。</p>
+<h3 id="l_11-l_21-l_31">第一列 (计算 <span class="arithmatex">\(l_{11}, l_{21}, l_{31}\)</span>)<a class="headerlink" href="#l_11-l_21-l_31" title="Permanent link">¶</a></h3>
+<p>由矩阵乘法第一列可知：</p>
+<ol>
+<li><span class="arithmatex">\(a_{11} = l_{11}^2 \implies \mathbf{l_{11} = \sqrt{a_{11}}}\)</span></li>
+<li><span class="arithmatex">\(a_{21} = l_{21} l_{11} \implies \mathbf{l_{21} = \frac{a_{21}}{l_{11}}}\)</span></li>
+<li><span class="arithmatex">\(a_{31} = l_{31} l_{11} \implies \mathbf{l_{31} = \frac{a_{31}}{l_{11}}}\)</span></li>
+</ol>
+<h3 id="l_22-l_32">第二列 (计算 <span class="arithmatex">\(l_{22}, l_{32}\)</span>)<a class="headerlink" href="#l_22-l_32" title="Permanent link">¶</a></h3>
+<p>由矩阵乘法第二列可知：</p>
+<ol>
+<li><span class="arithmatex">\(a_{22} = l_{21}^2 + l_{22}^2 \implies l_{22}^2 = a_{22} - l_{21}^2 \implies \mathbf{l_{22} = \sqrt{a_{22} - l_{21}^2}}\)</span></li>
+<li><span class="arithmatex">\(a_{32} = l_{31} l_{21} + l_{32} l_{22} \implies \mathbf{l_{32} = \frac{a_{32} - l_{31}l_{21}}{l_{22}}}\)</span></li>
+</ol>
+<h3 id="l_33">第三列 (计算 <span class="arithmatex">\(l_{33}\)</span>)<a class="headerlink" href="#l_33" title="Permanent link">¶</a></h3>
+<ol>
+<li><span class="arithmatex">\(a_{33} = l_{31}^2 + l_{32}^2 + l_{33}^2 \implies \mathbf{l_{33} = \sqrt{a_{33} - (l_{31}^2 + l_{32}^2)}}\)</span></li>
+</ol>
+<h3 id="_2">通用计算流程 (算法)<a class="headerlink" href="#_2" title="Permanent link">¶</a></h3>
+<p>观察上面的推导，我们可以总结出通用的递推公式。我们需要 <strong>按列</strong>（或按行）遍历矩阵。</p>
+<p>对于第 <span class="arithmatex">\(j\)</span> 列（<span class="arithmatex">\(j=1 \dots n\)</span>）：</p>
+<p><mark>步骤 1：计算对角线元素 <span class="arithmatex">\(L_{jj}\)</span></mark></p>
+<p>对角线元素等于“原矩阵元素”减去“该行左边所有元素的平方和”，然后开根号。</p>
+<div class="arithmatex">\[
+L_{jj} = \sqrt{ A_{jj} - \sum_{k = 1}^{j-1} L_{jk}^2 }
+\]</div>
+<p><mark>步骤 2：计算非对角线元素 <span class="arithmatex">\(L_{ij}\)</span> (其中 <span class="arithmatex">\(i &gt; j\)</span>)</mark></p>
+<p>下三角部分的元素等于“原矩阵元素”减去“对应行与列的点积”，然后除以对角线元素。</p>
+<div class="arithmatex">\[
+L_{ij} = \frac{1}{L_{jj}} \left( A_{ij} - \sum_{k = 1}^{j-1} L_{ik} L_{jk} \right)
+\]</div>
+<h4 id="_3">计算流程图解<a class="headerlink" href="#_3" title="Permanent link">¶</a></h4>
+<ol>
+<li>算 <span class="arithmatex">\(L_{11}\)</span>，然后除以此值算出第一列剩下的。</li>
+<li>算 <span class="arithmatex">\(L_{22}\)</span>，然后除以此值算出第二列剩下的。</li>
+<li>...以此类推直到右下角。</li>
+</ol>
+<h3 id="4-slam-cholesky">4. 为什么 SLAM 和优化中常用 Cholesky？<a class="headerlink" href="#4-slam-cholesky" title="Permanent link">¶</a></h3>
+<p>虽然你代码里用的是 LDLT，但 Cholesky (<span class="arithmatex">\(LL^T\)</span>) 和 LDLT 是一家人，它们的优缺点非常相似：</p>
+<ol>
+<li><strong>极快</strong>：<ul>
+<li>求解 <span class="arithmatex">\(Ax=b\)</span> 时，LU 分解需要约 <span class="arithmatex">\(2n^3/3\)</span> 次浮点运算。</li>
+<li>Cholesky 分解利用了对称性，只需要约 <span class="arithmatex">\(n^3/3\)</span> 次运算。<strong>速度快一倍</strong>。</li>
+</ul>
+</li>
+<li><strong>数值稳定</strong>：<ul>
+<li>对于正定矩阵，Cholesky 分解是非常稳定的，误差不会累积放大。</li>
+</ul>
+</li>
+<li><strong>判断正定性</strong>：<ul>
+<li>如果计算过程中，根号下的数字变成了负数（即 <span class="arithmatex">\(A_{jj} - \sum L_{jk}^2 &lt; 0\)</span>），说明矩阵 <strong>不是正定</strong> 的。因此，Cholesky 分解常被用来作为检测矩阵是否正定的最快方法。</li>
+</ul>
+</li>
+</ol>
+<h2 id="ldlt">LDLT 分解<a class="headerlink" href="#ldlt" title="Permanent link">¶</a></h2>
+<p>定义：对于一个对称正定矩阵，我们可以把它分解为 3 个矩阵的乘积：</p>
+<div class="arithmatex">\[
+A = LDL^T
+\]</div>
+<p>其中：<span class="arithmatex">\(L\)</span> 是一个单位下三角矩阵，对角线元素全是 1，只有左下角有数值。<span class="arithmatex">\(D\)</span> 是一个对角矩阵，只有对角线上有数值，其余全是 0。<span class="arithmatex">\(L^T\)</span> 是 <span class="arithmatex">\(L\)</span> 的转置矩阵（上三角矩阵，对角线元素全 1）。</p>
+<p>与标准 Cholesky 分解（<span class="arithmatex">\(LL^T\)</span>）的区别</p>
+<ul>
+<li>标准 Cholesky 分解将矩阵分解为 <span class="arithmatex">\(LL^T\)</span>（这里不要求 <span class="arithmatex">\(L\)</span> 的对角线元素为 1），所以对角线元素需要计算平方根；</li>
+<li>LDLT 分解避免了计算平方根，它把数值的大小分离到了中间的 <span class="arithmatex">\(D\)</span> 矩阵里；</li>
+</ul>
+<p>加速求解线性方程组的原理和 LU 分解一样（LU 分解是将一个矩阵 <span class="arithmatex">\(A\)</span> 分解为一个下三角矩阵和上三角矩阵的乘积，不要求 <span class="arithmatex">\(L\)</span> 和 <span class="arithmatex">\(U\)</span> 互为转置，要求 <span class="arithmatex">\(A\)</span> 的所有顺序主子式都大于 0），主要原因就是上三角矩阵或者下三角矩阵求解方程组快，将一个复杂的求解分解为两次简单的求解。</p>
+<p><mark>具体求解流程如下：</mark></p>
+<p>当我们有了 <span class="arithmatex">\(A = LDL^T\)</span>，解方程 <span class="arithmatex">\(Ax=b\)</span> 就变成了接力跑，分三步走，每一步都非常简单：</p>
+<p>原始方程： <span class="arithmatex">\((LDL^T) x = b\)</span></p>
+<ol>
+<li><strong>令 <span class="arithmatex">\(z = DL^T x\)</span>，解 <span class="arithmatex">\(L z = b\)</span></strong>：<ul>
+<li>因为 <span class="arithmatex">\(L\)</span> 是下三角矩阵，我们可以从第一行开始，直接算出 <span class="arithmatex">\(z_1\)</span>，代入第二行算出 <span class="arithmatex">\(z_2\)</span>... 这叫 <strong>前向代入 (Forward Substitution)</strong>。</li>
+</ul>
+</li>
+<li><strong>令 <span class="arithmatex">\(y = L^T x\)</span>，解 <span class="arithmatex">\(D y = z\)</span></strong>：<ul>
+<li>因为 <span class="arithmatex">\(D\)</span> 是对角矩阵，这一步仅仅是简单的 <strong>除法</strong>（<span class="arithmatex">\(y_i = z_i / D_{ii}\)</span>）。</li>
+</ul>
+</li>
+<li><strong>最后解 <span class="arithmatex">\(L^T x = y\)</span></strong>：<ul>
+<li>因为 <span class="arithmatex">\(L^T\)</span> 是上三角矩阵，我们可以从最后一行开始往回算。这叫 <strong>后向代入 (Backward Substitution)</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_4">为什么它能加速？（核心优势）<a class="headerlink" href="#_4" title="Permanent link">¶</a></h3>
+<p>LDLT 分解之所以快，主要是跟通用的 <strong>LU 分解（高斯消元）</strong> 以及 <strong>直接求逆矩阵</strong> 相比。</p>
+<h4 id="a"><span class="arithmatex">\(A\)</span>. 利用了“对称性” (计算量减半)<a class="headerlink" href="#a" title="Permanent link">¶</a></h4>
+<ul>
+<li><strong>通用方法 (LU 分解)</strong>：不假设矩阵是对称的。它需要处理矩阵的所有元素。计算复杂度约为 <span class="arithmatex">\(\frac{2}{3}n^3\)</span>。</li>
+<li><strong>LDLT / Cholesky</strong>：它是专门为对称矩阵设计的。因为 <span class="arithmatex">\(A\)</span> 是对称的（<span class="arithmatex">\(A_{ij} = A_{ji}\)</span>），我们只需要计算下三角部分，上三角部分直接对应相等。</li>
+<li><strong>加速效果</strong>：计算复杂度降为 <span class="arithmatex">\(\approx \frac{1}{3}n^3\)</span>。<strong>速度是通用方法的 2 倍。</strong></li>
+</ul>
+<h4 id="b"><span class="arithmatex">\(B\)</span>. 避免了“求逆” (数值稳定性与速度)<a class="headerlink" href="#b" title="Permanent link">¶</a></h4>
+<ul>
+<li>初学者常以为解 <span class="arithmatex">\(Hx=b\)</span> 是算 <span class="arithmatex">\(x = H^{-1}b\)</span>。</li>
+<li><strong>千万不要显式求逆矩阵！</strong> 求逆矩阵的计算量极大（<span class="arithmatex">\(n^3\)</span>），而且容易引入巨大的舍入误差。</li>
+<li>LDLT 只是对矩阵进行“揉捏变形”（分解），然后通过代入法求解，从来没有真正算过 <span class="arithmatex">\(H^{-1}\)</span>。这在计算机中既快又准。</li>
+</ul>
+<h4 id="c-cholesky"><span class="arithmatex">\(C\)</span>. 避免了“开平方” (相对于标准 Cholesky)<a class="headerlink" href="#c-cholesky" title="Permanent link">¶</a></h4>
+<ul>
+<li>标准 Cholesky 分解 (<span class="arithmatex">\(LL^T\)</span>) 需要计算对角线元素的平方根 (<span class="arithmatex">\(\sqrt{x}\)</span>)。</li>
+<li>在早期的处理器或某些嵌入式设备上，浮点数开方运算比乘除法慢得多。LDLT 只需要加减乘除，完全避免了开方，因此在硬件上执行效率更高。</li>
+</ul>
+<h2 id="cholesky_2">Cholesky 分解的其他应用<a class="headerlink" href="#cholesky_2" title="Permanent link">¶</a></h2>
+<h3 id="1-monte-carlo">1. 生成多维相关的高斯随机变量 (Monte Carlo 模拟)<a class="headerlink" href="#1-monte-carlo" title="Permanent link">¶</a></h3>
+<p>这是 Cholesky 分解在工程模拟中最常见的用途。</p>
+<p>场景：在做机器人仿真或粒子滤波（Particle Filter）时，你通常能很方便地生成一组标准正态分布的随机数 <span class="arithmatex">\(z \sim N(0, I)\)</span>（也就是 uncorrelated，互不相关的白噪声）。</p>
+<p>但是，现实中的噪声通常是相关的。比如你想模拟一个状态 <span class="arithmatex">\(x\)</span>，它的协方差矩阵是 <span class="arithmatex">\(\Sigma\)</span>（非对角阵，说明变量间有相关性）。怎么把“白噪声”变成“符合 <span class="arithmatex">\(\Sigma\)</span> 分布的噪声”？</p>
+<p>原理：利用 Cholesky 分解 <span class="arithmatex">\(\Sigma = L L^T\)</span>。</p>
+<p>令 <span class="arithmatex">\(x = \mu + L z\)</span>。那么 <span class="arithmatex">\(x\)</span> 的协方差就是：</p>
+<div class="arithmatex">\[
+Cov(x) = E [(Lz)(Lz)^T] = L E [zz^T] L^T = L I L^T = L L^T = \Sigma
+\]</div>
+<p>一句话总结：Cholesky 分解是把“独立白噪声”染成“相关色噪声”的染色笔。</p>
+<hr>
+<h3 id="2-unscented-kalman-filter-ukf">2. Unscented Kalman Filter (UKF, 无迹卡尔曼滤波)<a class="headerlink" href="#2-unscented-kalman-filter-ukf" title="Permanent link">¶</a></h3>
+<p>相比 EKF 使用雅可比矩阵线性化，UKF 使用 <strong>Sigma 点 (Sigma Points)</strong> 来近似非线性分布。</p>
+<p>场景：UKF 需要在当前状态的协方差椭球面上取几个采样点（Sigma Points）。</p>
+<p>原理：Sigma 点的计算公式里显式地包含了一个平方根项：</p>
+<div class="arithmatex">\[
+\mathcal{X} = \bar{x} \pm \sqrt{(n+\lambda)\Sigma}
+\]</div>
+<p>这里的 <span class="arithmatex">\(\sqrt{\Sigma}\)</span> 指的就是矩阵的平方根。而在代码实现中，这个 <span class="arithmatex">\(\sqrt{\Sigma}\)</span> 正是通过 Cholesky 分解 得到的下三角矩阵 <span class="arithmatex">\(L\)</span> 的列向量。</p>
+<p>一句话总结：没有 Cholesky 分解，UKF 就选不出那些用来传递状态的 Sigma 关键点。</p>
+<hr>
+<h3 id="3-log-likelihood">3. 快速计算行列式与对数似然 (Log-Likelihood)<a class="headerlink" href="#3-log-likelihood" title="Permanent link">¶</a></h3>
+<p>在机器学习（如高斯过程 Gaussian Processes）或最大似然估计中，我们经常需要计算多元高斯分布的概率密度函数 (PDF)。</p>
+<p>场景：PDF 公式里有一项是 <span class="arithmatex">\(\frac{1}{\sqrt{(2\pi)^k \det(\Sigma)}}\)</span>，或者在求 Log-Likelihood 时需要算 <span class="arithmatex">\(\ln(\det(\Sigma))\)</span>。</p>
+<p>直接算大矩阵的行列式 <span class="arithmatex">\(\det(\Sigma)\)</span> 计算量非常大。</p>
+<p>原理：利用 <span class="arithmatex">\(\Sigma = L L^T\)</span>：</p>
+<p><span class="arithmatex">\(\det(\Sigma) = \det(L L^T) = \det(L) \det(L^T) = (\det(L))^2\)</span></p>
+<p>因为 <span class="arithmatex">\(L\)</span> 是三角形矩阵，它的行列式就是对角线元素的乘积。</p>
+<div class="arithmatex">\[
+\det(\Sigma) = \left( \prod_{i} L_{ii} \right)^2
+\]</div>
+<p>取对数后更是变成了简单的加法：<span class="arithmatex">\(\ln(\det(\Sigma)) = 2 \sum \ln(L_{ii})\)</span>。</p>
+<p>一句话总结：把 <span class="arithmatex">\(O(n^3)\)</span> 的行列式计算变成了 <span class="arithmatex">\(O(n)\)</span> 的对角线乘法。</p>
+<hr>
+<h3 id="4-square-root-filters">4. 提高数值稳定性的“平方根滤波” (Square Root Filters)<a class="headerlink" href="#4-square-root-filters" title="Permanent link">¶</a></h3>
+<p>这是惯性导航和高精度 SLAM 中的高级技巧。</p>
+<p>场景：标准的卡尔曼滤波（KF）在经过多次迭代后，由于浮点数精度丢失，协方差矩阵 <span class="arithmatex">\(P\)</span> 可能会失去正定性（比如对角线出现了负数），导致滤波器发散崩溃。</p>
+<p>原理：平方根滤波（SR-KF / SRIF） 不直接存储和更新协方差矩阵 <span class="arithmatex">\(P\)</span>，而是始终存储 <span class="arithmatex">\(P\)</span> 的 Cholesky 因子 <span class="arithmatex">\(L\)</span>（或者其逆）。因为 <span class="arithmatex">\(P = L L^T\)</span>，无论 <span class="arithmatex">\(L\)</span> 里的数字怎么变，乘出来的 <span class="arithmatex">\(P\)</span> 永远是半正定的，这从数学结构上保证了滤波器绝对不会因为负方差而崩溃。</p>
+<p>一句话总结：Cholesky 因子是协方差矩阵的“保鲜膜”，防止它变质（非正定）。</p>
+<hr>
+<h3 id="5-whitening-decorrelation">5. 最小二乘中的“去相关” (Whitening / Decorrelation)<a class="headerlink" href="#5-whitening-decorrelation" title="Permanent link">¶</a></h3>
+<p>这其实是第 1 点的逆过程，在加权最小二乘（Weighted Least Squares）中非常重要。</p>
+<p>场景：当观测数据的误差存在相关性（协方差矩阵 <span class="arithmatex">\(\Sigma\)</span> 不是对角阵）时，我们不能直接用标准的最小二乘。我们需要把数据“拉平”变成独立的。</p>
+<p>原理：计算 <span class="arithmatex">\(\Sigma^{-1} = (LL^T)^{-1} = (L^{-1})^T L^{-1}\)</span>。</p>
+<p>我们将残差项 <span class="arithmatex">\(e\)</span> 乘以 <span class="arithmatex">\(L^{-1}\)</span>，得到新的残差 <span class="arithmatex">\(e' = L^{-1}e\)</span>。</p>
+<p>此时，<span class="arithmatex">\(e'\)</span> 的协方差就变成了单位阵 <span class="arithmatex">\(I\)</span>。这样就把一个复杂的加权最小二乘问题转化为了标准的最小二乘问题。</p>
+<hr>
+<h3 id="_5">总结<a class="headerlink" href="#_5" title="Permanent link">¶</a></h3>
+<p>Cholesky 分解不仅仅是解方程的工具，它是 <strong>处理协方差矩阵（Covariance Matrix）的神器</strong>。</p>
+<p>只要你的问题里涉及 <strong>多元高斯分布</strong>（SLAM 中的状态估计、机器学习中的高斯过程、蒙特卡洛仿真），Cholesky 分解几乎都是绕不开的核心算子。</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="最后更新">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="创建日期">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+                
+
+  
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2025 Gongzihang6
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["toc.follow", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

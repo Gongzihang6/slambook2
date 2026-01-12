@@ -1,0 +1,3583 @@
+<!DOCTYPE html><html lang="zh" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Gongzihang6">
+      
+      
+        <link rel="canonical" href="https://Gongzihang6.github.io/slambook2/%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch07-%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/">
+      
+      
+        <link rel="prev" href="../ch06-%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96/">
+      
+      
+        <link rel="next" href="../../%E5%85%B6%E4%BB%96/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>ch07-视觉里程计1 - 视觉SLAM十四讲学习笔记</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-header__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            视觉SLAM十四讲学习笔记
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ch07-视觉里程计1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="lime" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-tabs__link">
+          
+  
+  
+  学习笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../practice/env.md" class="md-tabs__link">
+          
+  
+  
+  代码实践
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-tabs__link">
+          
+  
+  
+  课后习题
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E5%85%B6%E4%BB%96/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/" class="md-tabs__link">
+          
+  
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-nav__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    视觉SLAM十四讲学习笔记
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习笔记
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习笔记
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2讲-初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2讲-初识SLAM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4讲-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4讲-李群与李代数
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch4%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7讲-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7讲-视觉里程计1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    视觉里程计 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/ICP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D-3D：ICP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E7%82%B9%E4%BA%91%E5%85%B3%E9%94%AE%E7%82%B9%E4%B8%8E%E7%89%B9%E5%BE%81%E6%8F%8F%E8%BF%B0%E5%AD%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D 点云关键点
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4">
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第9讲-后端1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第9讲-后端1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch9%E5%90%8E%E7%AB%AF1/%E6%A6%82%E8%BF%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_5">
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第10讲-后端2
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第10讲-后端2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch10%E5%90%8E%E7%AB%AF2/%E4%BD%8D%E5%A7%BF%E5%9B%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    位姿图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6">
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第13讲-实践SLAM系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第13讲-实践SLAM系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/C%2B%2B%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++智能指针
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/cvcalcOpticalFlowPyrLK%E5%87%BD%E6%95%B0%E8%AF%A6%E8%A7%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cv::calcOpticalFlowPyrLK 函数详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    代码实践
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    代码实践
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/env.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行环境配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课后习题
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课后习题
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch03-三维空间刚体运动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch04-%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch04-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-%E7%9B%B8%E6%9C%BA%E4%B8%8E%E5%9B%BE%E5%83%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch05-相机与图像
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch06-非线性优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch07-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch07-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-orb-sift-surf-orb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、除了本书介绍的 ORB 特征点，你还能找到哪些特征点？请说说 SIFT 或 SURF 的原理，并对比它们与 ORB 之间的优劣
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1、除了本书介绍的 ORB 特征点，你还能找到哪些特征点？请说说 SIFT 或 SURF 的原理，并对比它们与 ORB 之间的优劣">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#orb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ORB 特征
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ORB 特征">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAST 角点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brief" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 描述子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BRIEF 描述子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brief_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 算法实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brief_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 点对选取
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SIFT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SIFT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间极值检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="尺度空间极值检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构建尺度空间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的表示
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高斯差分金字塔
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的参数确定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        局部极值检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="局部极值检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每组空间需要的层数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点定位
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="关键点定位">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点精细定位
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        消除边缘效应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点方向指定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点特征描述子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="关键点特征描述子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确定计算描述子所需的图像区域
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        旋转坐标轴至关键点主方向
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtimes-d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        对 \(d\times d\) 的每个子区域计算梯度幅值与方向并进行高斯加权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trilinear-interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三线性插值 (Trilinear Interpolation) —— 核心步骤
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        生成描述子向量
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        向量归一化 (去除光照影响)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SURF
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SURF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征点检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="特征点检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hessian 矩阵近似
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的表示
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点定位
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征点方向分配
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征描述子
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surf-sift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SURF 与 SIFT 的对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="其他">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-d_xx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. \(D_{xx}\) 是什么？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 为什么要近似？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 为什么 可以 近似？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Hessian 矩阵的几何意义
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 利用特征值 (\(\lambda\)) 分析形状
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结图示
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    其他
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%85%B6%E4%BB%96/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵分解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%85%B6%E4%BB%96/%E7%9F%A9%E9%98%B5%E7%9B%B8%E4%BC%BC%E5%8F%98%E6%8D%A2%E7%9A%84%E6%84%8F%E4%B9%89/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵相似变换的意义
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-orb-sift-surf-orb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、除了本书介绍的 ORB 特征点，你还能找到哪些特征点？请说说 SIFT 或 SURF 的原理，并对比它们与 ORB 之间的优劣
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1、除了本书介绍的 ORB 特征点，你还能找到哪些特征点？请说说 SIFT 或 SURF 的原理，并对比它们与 ORB 之间的优劣">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#orb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ORB 特征
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ORB 特征">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAST 角点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brief" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 描述子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BRIEF 描述子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brief_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 算法实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brief_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BRIEF 点对选取
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SIFT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SIFT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间极值检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="尺度空间极值检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构建尺度空间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的表示
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高斯差分金字塔
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的参数确定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        局部极值检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="局部极值检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每组空间需要的层数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点定位
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="关键点定位">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点精细定位
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        消除边缘效应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点方向指定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点特征描述子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="关键点特征描述子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确定计算描述子所需的图像区域
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        旋转坐标轴至关键点主方向
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dtimes-d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        对 \(d\times d\) 的每个子区域计算梯度幅值与方向并进行高斯加权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trilinear-interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三线性插值 (Trilinear Interpolation) —— 核心步骤
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        生成描述子向量
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        向量归一化 (去除光照影响)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SURF
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SURF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征点检测
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="特征点检测">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hessian 矩阵近似
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        尺度空间的表示
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键点定位
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征点方向分配
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特征描述子
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surf-sift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SURF 与 SIFT 的对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="其他">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-d_xx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. \(D_{xx}\) 是什么？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 为什么要近似？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 为什么 可以 近似？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Hessian 矩阵的几何意义
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 利用特征值 (\(\lambda\)) 分析形状
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结图示
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="_1">习题<a class="headerlink" href="#_1" title="Permanent link">¶</a></h1>
+<h2 id="1-orb-sift-surf-orb">1、除了本书介绍的 ORB 特征点，你还能找到哪些特征点？请说说 SIFT 或 SURF 的原理，并对比它们与 ORB 之间的优劣<a class="headerlink" href="#1-orb-sift-surf-orb" title="Permanent link">¶</a></h2>
+<h3 id="orb">ORB 特征<a class="headerlink" href="#orb" title="Permanent link">¶</a></h3>
+<p><code>ORB</code> 特征由关键点和描述子两部分组成。关键点是 <code>Oriented FAST</code>，一种改进的 <code>FAST</code> 角点；描述子是 <code>BRIEF</code>；</p>
+<p>因此，提取图像中的 <code>ORB</code> 特征分为如下两个步骤：</p>
+<ul>
+<li><strong>FAST 角点提取：</strong> 找出图像中的角点。相比于原版的 <code>FAST</code>，<code>ORB</code> 计算了特征点的主方向，为后续的 <code>BRIEF</code> 描述子增加了旋转不变性。</li>
+<li><strong>BRIEF 描述子：</strong> 对前一步提取出特征点的周围图像区域进行描述。</li>
+</ul>
+<h4 id="fast">FAST 角点<a class="headerlink" href="#fast" title="Permanent link">¶</a></h4>
+<p>FAST 角点，主要用于检测局部像素灰度变化明显的地方，以速度快著称。核心思想是：如果一个像素与邻域的像素灰度差别较大（过亮或者过暗），则更可能是角点，相比于其他角点检测算法，FAST 只需要比较像素亮度的大小，十分快捷，主要检测过程如下：</p>
+<ol>
+<li>在图像中选取像素 <span class="arithmatex">\(p\)</span>，假设它的亮度为 <span class="arithmatex">\(I_p\)</span>；</li>
+<li>设置一个阈值 <span class="arithmatex">\(T\)</span>（比如，<span class="arithmatex">\(I_p\)</span> 的 20%）；</li>
+<li>以像素 <span class="arithmatex">\(p\)</span> 为中心，选取半径为 3 的圆上的 16 个像素点；</li>
+<li>加入选取的圆上有 <strong>连续的 <span class="arithmatex">\(N\)</span> 个点</strong> 的亮度大于 <span class="arithmatex">\(I_p+T\)</span> 或小于 <span class="arithmatex">\(I_p-T\)</span>，那么像素 <span class="arithmatex">\(p\)</span> 就可以被认为是特征点（<span class="arithmatex">\(N\)</span> 通常取 12，也就是 <code>FAST-12</code>.其他常用的 N 取值为 9 和 11，即 <code>FAST-9</code> 和 <code>FAST-11</code>）；</li>
+<li>循环以上 4 步，对每一个像素执行相同的操作；</li>
+</ol>
+<p></p><figure id="_figure-1"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cimage-20251216184640130.png" data-desc-position="bottom"><img alt="image-20251216184640130" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cimage-20251216184640130.png"></a><figcaption>Figure 1: image-20251216184640130</figcaption></figure><p></p>
+<p>注意：</p>
+<ul>
+<li>为了更高效，可以添加一个预排除操作，以快速排除绝大多数不是角点的像素；具体操作为：对于每个像素，直接检测邻域圆上的第 1、5、9、13 个像素的亮度，只有当这 4 个像素中有 3 个同时大于 <span class="arithmatex">\(I_p+T\)</span> 或小于 <span class="arithmatex">\(I_p-T\)</span> 时，当前像素才有可能是一个角点（因为角点需要连续的 12 个都满足），否则应该直接排除，这样大部分非角点的像素就只需要比较 4 个像素点的亮度；</li>
+<li>此外，原始的 FAST 角点经常出现“扎堆”的现象，所以第一遍检测之后，还需要用非极大值抑制（NMS，Non-maximal suppression），在一定区域内仅保留响应极大值的角点，避免角点集中问题。</li>
+<li>另外，ORB 为了保证特征多尺度的一致性，也就是在不同尺度下都能检测到同样的角点，ORB 构建了图像金字塔，它把原图缩小、再缩小、再缩小，生成 8 层（默认配置）不同分辨率的图像，然后在每一层图像上都跑一遍 FAST 角点检测；当这些不同层级的特征点映射回原图坐标时，就表现为位置相同、但半径不同的同心圆。</li>
+<li>最后，ORB 中通过灰度质心法（Intensity Centroid）给 FAST 关键点赋予“方向”，核心思想是将图像块看成一块“有质量的物理实体”，利用力学中质心的概念来确定一个稳定的方向。</li>
+<li>想象你截取了一个以关键点 <span class="arithmatex">\(O\)</span> 为中心的小图像块（比如 <code>31*31</code> 像素的圆形区域），几何中心就是这个圆的最中间位置（圆心）；我们把每个每个像素点的灰度值（亮度）看作它的质量，白色的点（灰度为 255）很重，黑色的点（灰度为 0）很轻；灰度质心就是将所有像素坐标根据亮度值加权平均而来，由于图像纹理一般是不均匀的，这个重心 <span class="arithmatex">\(C\)</span> 和几何中心 <span class="arithmatex">\(O\)</span> 一般不重合，因此连接几何中心 <span class="arithmatex">\(O\)</span> 和灰度质心 <span class="arithmatex">\(C\)</span> 形成的向量 <span class="arithmatex">\(OC\)</span>，就是一个 <strong>天然的、稳定的方向向量</strong>。</li>
+</ul>
+<p>为了计算质心位置，ORB 使用了图像处理中经典的 <strong>“矩” (Moments)</strong> 的概念。</p>
+<p>假设图像块为 <span class="arithmatex">\(B\)</span>，<span class="arithmatex">\((x,y)\)</span> 是像素相对于中心 <span class="arithmatex">\(O\)</span> 的坐标，<span class="arithmatex">\(I(x,y)\)</span> 是该处的灰度值。</p>
+<p><strong>第一步：计算矩</strong></p>
+<p>图像的 <span class="arithmatex">\((p+q)\)</span> 阶矩定义为：</p>
+<div class="arithmatex">\[
+m_{pq} = \sum_{x, y \in B} x^p y^q I(x, y)
+\]</div>
+<p>我们需要计算三个矩：</p>
+<ul>
+<li>
+<p>零阶矩 <span class="arithmatex">\(m_{00}\)</span>：所有像素灰度之和（相当于图像块的总质量）。</p>
+<div class="arithmatex">\[
+m_{00} = \sum_{x, y} I(x, y)
+\]</div>
+</li>
+<li>
+<p>一阶矩 <span class="arithmatex">\(m_{10}\)</span> 和 <span class="arithmatex">\(m_{01}\)</span>：用于计算质心的位置。</p>
+<div class="arithmatex">\[
+m_{10} = \sum_{x, y} x \cdot I(x, y)
+\]</div>
+<div class="arithmatex">\[
+m_{01} = \sum_{x, y} y \cdot I(x, y)
+\]</div>
+</li>
+</ul>
+<p>第二步：计算质心坐标</p>
+<p>根据力学原理，质心 <span class="arithmatex">\(C\)</span> 的坐标 <span class="arithmatex">\((C_x, C_y)\)</span> 为：</p>
+<div class="arithmatex">\[
+C_x = \frac{m_{10}}{m_{00}}, \quad C_y = \frac{m_{01}}{m_{00}}
+\]</div>
+<p>第三步：计算方向角</p>
+<p>我们有了几何中心 <span class="arithmatex">\(O(0,0)\)</span> 和质心 <span class="arithmatex">\(C(C_x, C_y)\)</span>，那么向量 <span class="arithmatex">\(\vec{OC}\)</span> 的方向角 <span class="arithmatex">\(\theta\)</span> 就可以通过 <code>atan2</code> 函数求得：</p>
+<div class="arithmatex">\[
+\theta = \arctan2(m_{01}, m_{10})
+\]</div>
+<p>注意：这里可以直接用 <span class="arithmatex">\(m_{01}\)</span> 和 <span class="arithmatex">\(m_{10}\)</span>，不需要除以 <span class="arithmatex">\(m_{00}\)</span>，因为 <span class="arithmatex">\(m_{00}\)</span> 是正标量，不影响比值和角度。</p>
+<p>所以，ORB 特征通过图像金字塔和灰度质心法实现了尺度不变性和旋转不变性；</p>
+<h4 id="brief">BRIEF 描述子<a class="headerlink" href="#brief" title="Permanent link">¶</a></h4>
+<p>它是一种对已检测到的特征点进行表示和描述的特征描述方法，和传统的利用图像局部邻域的灰度直方图或梯度直方图提取特征的方式不同，BRIEF 是一种二进制编码的特征描述子，既降低了存储空间的需求，提升了特征描述子生成的速度，也减少了特征匹配时所需的时间。</p>
+<p>由于 BRIEF 只是一种特征描述子，因此事先得检测并定位特征点，可采用 Harris、FAST 或者是 SIFT 算法检测特征点，在此基础上利用 BRIEF 算法建立特征描述符。该描述符是在特征点邻域 Patch 内随机选择若干点对 <span class="arithmatex">\((x,y)\)</span> ，并比较这些点对的灰度值，灰度测试 <span class="arithmatex">\(τ\)</span> 定义如下：</p>
+<div class="arithmatex">\[
+\tau(p; \mathbf{x}, \mathbf{y}) \doteq \begin{cases}
+1 &amp; p(\mathbf{x}) &lt; p(\mathbf{y}) \\
+0 &amp; p(\mathbf{x}) \geq p(\mathbf{y})
+\end{cases}
+\]</div>
+<p>式中 <span class="arithmatex">\(p(\mathbf{x})\)</span> 是图像块上点 <span class="arithmatex">\(\mathbf{x} = (u, v)^\top\)</span> 处的灰度值。所有的 <span class="arithmatex">\(n\)</span> 个点对进行比较，生成了一个 <span class="arithmatex">\(n\)</span> 长的二进制串：</p>
+<div class="arithmatex">\[
+f_n(p) \doteq \sum_{1 \leq i \leq n} 2^{i-1} \tau(p; \mathbf{x}_i, \mathbf{y}_i)
+\]</div>
+<p>对于 <span class="arithmatex">\(n\)</span> 的取值可以设为 128、256 或者 512。</p>
+<h5 id="brief_1">BRIEF 算法实现<a class="headerlink" href="#brief_1" title="Permanent link">¶</a></h5>
+<ul>
+<li>利用 FAST 或者 Harris 等方法进行角点检测</li>
+<li>确定特征点邻域窗口 Patch，并对该邻域内的像素进行高斯平滑滤除噪声</li>
+<li>在邻域窗口内随机选取 <span class="arithmatex">\(n = 128/256/512\)</span> 对像素点，根据灰度值大小编码成二进制串，生成 <span class="arithmatex">\(n\)</span> bit 的特征描述子（这里的随机指的是在确定这 <span class="arithmatex">\(n\)</span> 对像素点位置的时候，我们是这样确定的，我们会随机生成大量的点对（比如 <span class="arithmatex">\(M\)</span> 对），然后利用大量图像数据进行测试，计算这些点对的响应值（0 或 1，根据 <span class="arithmatex">\(\tau(p; \mathbf{x}, \mathbf{y})\)</span> 决定），形成下面类似的矩阵，每个值都是 0 或 1，每一列表示一个固定点对如列 1 代表（0，0）和（5，5）这一对，总共 <span class="arithmatex">\(M\)</span> 列，然后进行筛选：</li>
+<li>第一轮筛选，看方差，把那些全是 0 或者全是 1 的列扔掉。只保留那些 0 和 1 分布比较均匀（均值接近 0.5）的列。按照方差从大到小排序，得到集合 <span class="arithmatex">\(T\)</span>。</li>
+<li>第二轮筛选（看相关性 - 贪婪算法）：<ul>
+<li><strong>Step 1</strong>: 把 <span class="arithmatex">\(T\)</span> 中方差最大的那一列直接拿出来，放入最终结果列表 <span class="arithmatex">\(R\)</span>。这是第 1 个点对。</li>
+<li><strong>Step 2</strong>: 拿起 <span class="arithmatex">\(T\)</span> 中剩下的下一列，计算它与 <span class="arithmatex">\(R\)</span> 中 <strong>所有</strong> 列的相关性。</li>
+<li><strong>Step 3</strong>: 如果它与 <span class="arithmatex">\(R\)</span> 中任何一列的相关性太高（也就是太像了），就 <strong>扔掉</strong> 它。</li>
+<li><strong>Step 4</strong>: 如果它与 <span class="arithmatex">\(R\)</span> 中所有列都不相关（独一无二），就把它 <strong>加入</strong> <span class="arithmatex">\(R\)</span>。</li>
+<li><strong>Step 5</strong>: 重复，直到 <span class="arithmatex">\(R\)</span> 填满 256 个点对。</li>
+</ul>
+</li>
+</ul>
+<div class="arithmatex">\[
+Q =
+\begin{bmatrix}
+r_{1,1} &amp; r_{1,2} &amp; \cdots &amp; r_{1, M} \\
+r_{2,1} &amp; r_{2,2} &amp; \cdots &amp; r_{2, M} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+r_{300k,1} &amp; r_{300k,2} &amp; \cdots &amp; r_{300k, M}
+\end{bmatrix}
+\]</div>
+<h5 id="brief_2">BRIEF 点对选取<a class="headerlink" href="#brief_2" title="Permanent link">¶</a></h5>
+<p>原论文作者 Calonder 提供了 5 种在 <span class="arithmatex">\(S×S\)</span> 的邻域 Patch 内随机选取点对 <span class="arithmatex">\((x,y)\)</span> 的方法。如下图所示，一条线段的两个端点表示一个随机点对 <span class="arithmatex">\((x_i,y_i)\)</span> 。(比如采用下面的分布随机选点，生成初始候选池，后续再用上面逻辑筛选）</p>
+<p></p><figure id="_figure-2"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5CBRIEF_point_choice.png" data-desc-position="bottom"><img alt="BRIEF Point Choice" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5CBRIEF_point_choice.png"></a><figcaption>Figure 2: BRIEF Point Choice</figcaption></figure><p></p>
+<ol>
+<li><span class="arithmatex">\(\mathbf{x}, \mathbf{y}\)</span> 为均匀分布 <span class="arithmatex">\((-S/2, S/2)\)</span></li>
+<li><span class="arithmatex">\(\mathbf{x}, \mathbf{y}\)</span> 为高斯分布 <span class="arithmatex">\(\mathcal{N}(0, \frac{1}{25}S^2)\)</span></li>
+<li><span class="arithmatex">\(\mathbf{x}\)</span> 为高斯分布 <span class="arithmatex">\(\mathcal{N}(0, \frac{1}{25}S^2)\)</span>，<span class="arithmatex">\(\mathbf{y}\)</span> 为高斯分布 <span class="arithmatex">\(\mathcal{N}(0, \frac{1}{100}S^2)\)</span></li>
+<li>在空间量化极坐标下的离散位置随机采样</li>
+<li><span class="arithmatex">\(\mathbf{x}_i\)</span> 固定为 <span class="arithmatex">\((0,0)\)</span>，<span class="arithmatex">\(\mathbf{y}\)</span> 在周围平均采样</li>
+</ol>
+<p>然后为了解决旋转不变性问题，根据前面的 Oriented FAST 角点检测（灰度质心法）确定的主方向，我们只旋转前面确定的采样点对，得到旋转后的采样点对后，再用 <span class="arithmatex">\(\tau(p; \mathbf{x}, \mathbf{y})\)</span> 计算特征描述子，得到最终特征向量。（特征点对顺序不重要，只要一致即可，因为匹配的时候是看汉明距离，与顺序无关）</p>
+<h3 id="sift">SIFT<a class="headerlink" href="#sift" title="Permanent link">¶</a></h3>
+<p>SIFT（Scale-Invarient Feature Transform）是特征点检测领域的老大哥和黄金标注，虽然计算速度慢，但在准确性和稳定性上表现极佳，由 David Lowe 在 1999 年提出，2004 年完善。核心思想是将图像数据映射到一个对几何变换和光照变换都不敏感的高维特征空间。</p>
+<p>SIFT 关键点定位和描述子计算主要可以分为如下几个步骤，尺度空间极值检测、关键点定位、关键点方向指定、关键点特征描述子等</p>
+<h4 id="_2">尺度空间极值检测<a class="headerlink" href="#_2" title="Permanent link">¶</a></h4>
+<p>为了使检测到的特征点具有尺度不变性，能够在不同尺度下检测到尽可能完整的特征点。在 SIFT 中，我们使用图像的高斯金字塔来表示尺度空间，而且尺度规范化的高斯-拉普拉斯算子（LoG）具有尺度不变性，但是 LoG 算子运算量大，在具体实现中，可以用高斯差分（DoG）算子来近似 LoG 算子，在构建的尺度空间中检测稳定的特征点。核心原理在于 LoG 算子可以检测斑点，斑点处会响应极值。</p>
+<h5 id="_3">构建尺度空间<a class="headerlink" href="#_3" title="Permanent link">¶</a></h5>
+<p>在 SIFT 中，我们构建多层高斯金字塔，金字塔每一层称为一个 octave，每个 octave 内图像大小不变，但是每个 octave 内用于计算的高斯核的尺度\sigma 是不一样的，从下往上，尺度\sigma 逐渐增大，对应的，获取的高斯金字塔图像也就越模糊，模拟由近到远的过程中目标在人眼视网膜上的呈现过程。同时尺度空间需要满足一定的不变性，包括图像灰度不变性、对比度不变性、平移不变性、尺度不变性以及旋转不变性等，在某些情况下甚至要求尺度空间算子具备仿射不变性。</p>
+<h5 id="_4">尺度空间的表示<a class="headerlink" href="#_4" title="Permanent link">¶</a></h5>
+<p>图像的尺度空间 <span class="arithmatex">\(L(x,y,\sigma)\)</span> 定义为输入图像 <span class="arithmatex">\(I(x,y)\)</span> 与可变尺度的高斯函数 <span class="arithmatex">\(G(x,y,\sigma)\)</span> 进行卷积，每一个 octave 的每一层都是不同尺度的高斯核在输入图像上进行卷积的结果。</p>
+<div class="arithmatex">\[
+L(x, y, σ)= G(x, y, σ)∗I(x, y)
+\]</div>
+<div class="arithmatex">\[
+G(x, y, σ)=\frac{1}{2\pi \sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+\]</div>
+<p>公式中 <span class="arithmatex">\((x,y)\)</span> 是图像的像素坐标，高斯函数 <span class="arithmatex">\(G(x,y,\sigma)\)</span> 中的 <span class="arithmatex">\(\sigma\)</span> 是尺度坐标（尺度变化因子），<span class="arithmatex">\(\sigma\)</span> 大小决定图像的平滑程度，值越大模糊的越严重。大尺度对应图像的概貌特征，小尺度对应图像的细节特征。一般根据 <span class="arithmatex">\(3\sigma\)</span> 原则，高斯核矩阵的大小设为 <span class="arithmatex">\((6\sigma+1)\times(6\sigma+1)\)</span>。</p>
+<p>对图像使用高斯金字塔构建尺度空间时，主要分为两部分，一是对图像做降采样，二是对图像做不同尺度的高斯模糊。对图像做降采样得到不同尺度的图像，也就是不同的 octave，上面的 octave 由下面的 octave 降采样得到，宽和高分别是下面的 1/2；每个 octave 又分为若干层(Interval)，通过对图像做不同尺度的高斯模糊得到。</p>
+<h5 id="_5">高斯差分金字塔<a class="headerlink" href="#_5" title="Permanent link">¶</a></h5>
+<p>本来检测斑点的最好方法是高斯拉普拉斯算子 <span class="arithmatex">\(\nabla^2G\)</span>（LoG，Laplacian of Gaussian），2002 年 Mikolajczyk 在详细的实验比较中发现尺度归一化的高斯拉普拉斯函数 <span class="arithmatex">\(\sigma^2\nabla^2G\)</span> 的极大值和极小值同其它特征提起函数（例如：梯度、Hessian 或者 Harris 角点）比较，能够产生最为稳定的图像特征。而早在 1994 年 Lindebery 发现高斯差分函数（Difference-of-Gaussian ，简称 DoG 算子）与尺度归一化的高斯拉普拉斯函数 <span class="arithmatex">\(\sigma^2\nabla^2G\)</span> 非常近似。其中两者间的关系可以从如下推导得到：</p>
+<div class="arithmatex">\[
+\frac{\partial G}{\partial \sigma}=\sigma \nabla^2G
+\]</div>
+<p>其中 <span class="arithmatex">\(G\)</span> 是 <span class="arithmatex">\(G(x,y,\sigma)\)</span>，<span class="arithmatex">\(\frac{\partial G}{\partial \sigma}=\frac{x^2+y^2-2\sigma^2}{\sigma^3}G\)</span>，<span class="arithmatex">\(\nabla^2G=\frac{\partial ^2G}{\partial x^2}+\frac{\partial ^2G}{\partial y^2}=G_{xx}+G_{yy}=\frac{x^2+y^2-\sigma^2}{\sigma^4}G\)</span></p>
+<p>所以拉普拉斯算子 <span class="arithmatex">\(\nabla^2G\)</span> 作用与图像之后，会有尺度缩放的效果，因为分母的 <span class="arithmatex">\(\sigma\)</span> 是 4 次方，这会导致不同 <span class="arithmatex">\(\sigma\)</span> 尺度下作用于同一图像区域的响应值无法比较，无法获得真正的响应极值，所以应该使用尺度归一化的高斯拉普拉斯算子 <span class="arithmatex">\(\sigma^2\nabla^2G\)</span></p>
+<p>我们使用差分近似替代微分，则有：</p>
+<div class="arithmatex">\[
+\sigma \nabla^2 G = \frac{\partial G}{\partial \sigma} \approx \frac{G(x, y, k\sigma) - G(x, y, \sigma)}{k\sigma - \sigma}
+\]</div>
+<p>因此有：</p>
+<div class="arithmatex">\[
+G(x, y, k\sigma)-g(x, y,\sigma) \approx (k-1)\sigma^2\nabla^2G
+\]</div>
+<p>为了能更为高效地在尺度空间检测稳定的关键点，SIFT 作者选用了高斯差分算子替代高斯拉普拉斯算子。因此提出了高斯差分尺度空间 (Difference-of-Gaussian Scale-Space) <span class="arithmatex">\(D(x,y,σ)\)</span> ， <span class="arithmatex">\(D(x,y,σ)\)</span> 可以通过由变化尺度因子 <span class="arithmatex">\(k\)</span> 分隔的相邻不同尺度的高斯差分核与图像卷积生成：</p>
+<div class="arithmatex">\[
+\begin{aligned}
+D(x, y, σ)=&amp;(G(x, y, kσ)−G(x, y, σ))∗I(x, y) \\
+=&amp;L(x, y, kσ)−L(x, y, σ)
+\end{aligned}
+\]</div>
+<p>图像的高斯金字塔和高斯差分金字塔如下图所示，高斯差分图像由高斯金字塔中同一组 (Octave) 内相邻层 (Interval) 的图像作差得到。</p>
+<p></p><figure id="_figure-3"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5CDoG.png" data-desc-position="bottom"><img alt="图像高斯金字塔" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5CDoG.png"></a><figcaption>Figure 3: 图像高斯金字塔</figcaption></figure><p></p>
+<h5 id="_6">尺度空间的参数确定<a class="headerlink" href="#_6" title="Permanent link">¶</a></h5>
+<p>在由图像金字塔表示的尺度空间中，图像的 Octave 由原始图像的大小和塔顶图像的大小决定。</p>
+<div class="arithmatex">\[
+Octave = log_2(min(width_0, height_0))−log_2(min(width, height))
+\]</div>
+<p>其中， <span class="arithmatex">\(width_0,height_0\)</span> 分别为原始图像的宽和高， <span class="arithmatex">\(width,height\)</span> 分别为金字塔塔顶图像的宽和高。例如：对于一幅大小为 512×512 的图像，当塔顶图像大小为 4×4 时，图像的组数为 Octave = 8 。因为每组 octave 之间图像分辨率减半，从 2^9–&gt; 2^2，需要经过 8 次减半的下采样。</p>
+<p>尺度参数 <span class="arithmatex">\(σ\)</span> 的取值与金字塔的组数和层数相关，设第一组第一层的尺度参数取值为 <span class="arithmatex">\(σ(1,1)=σ_0\)</span> ，一般 <span class="arithmatex">\(σ_0\)</span> 取 1.6 。则第 <span class="arithmatex">\(m\)</span> 组第 <span class="arithmatex">\(n\)</span> 层的 <span class="arithmatex">\(σ(m,n)\)</span> 取值为</p>
+<div class="arithmatex">\[
+σ(m, n)= σ_0⋅2^{m−1}⋅k^{n−1}, \qquad k = 2^\frac{1}{S}
+\]</div>
+<p>式中， <span class="arithmatex">\(S\)</span> 是金字塔中每个 octave 的有效层数，<span class="arithmatex">\(k=2^\frac{1}{S}\)</span> 是变化尺度因子。相当于 <span class="arithmatex">\(m\)</span> 是大层，<span class="arithmatex">\(n\)</span> 是小层，大层之间跨越尺度按照 2 的指数增大，小层之间将一个 2 倍的尺度增大分成了 <span class="arithmatex">\(S\)</span> 步，所以每个大层有 <span class="arithmatex">\(S\)</span> 个小层，小层之间尺度逐步增加 <span class="arithmatex">\(k\)</span> 倍，<span class="arithmatex">\(S\)</span> 步增加完，刚好跨越一个大层，增加倍数为 2 倍。</p>
+<p>在检测极值点前对原始图像的高斯平滑会导致图像高频信息的丢失，所以在建立尺度空间之前，先利用双线性插值将图像扩大为原来的两倍，以保留原始图像信息，增加特征点数量。根据图像反走样的需要，通常假设输入图像 <span class="arithmatex">\(I(x,y)\)</span> 是经过高斯平滑处理的，其值为 <span class="arithmatex">\(σ′=0.5\)</span> ，即半个像元。意思就是说我们采集到的图像 <span class="arithmatex">\(I(x,y\)</span>) ，已经被 <span class="arithmatex">\(σ′=0.5\)</span> 的高斯滤波器平滑过了。那么，经过双线性插值扩大为原来的两倍后的图像 <span class="arithmatex">\(I′(x,y)\)</span> 可以看为是被 <span class="arithmatex">\(2σ′=1\)</span> 高斯平滑处理过的。所以我们不能直接对扩大两倍后的图像 <span class="arithmatex">\(I′(x,y)\)</span> 直接用 <span class="arithmatex">\(σ_0=1.6\)</span> 的高斯滤波器平滑，而应该用 <span class="arithmatex">\(\sqrt{\sigma_0^2-(2\sigma’^2)}\)</span> 的高斯滤波器去平滑图像 <span class="arithmatex">\(I′(x,y)\)</span> ，即：</p>
+<div class="arithmatex">\[
+I_{pyr(1,1)}(x, y)= I'(x, y)*G\left(x, y,\sqrt{\sigma_0^2-(2\sigma'^2)}\right)
+\]</div>
+<h4 id="_7">局部极值检测<a class="headerlink" href="#_7" title="Permanent link">¶</a></h4>
+<p>为了寻找 DoG 尺度空间的极值点，每一个采样点要和其所有邻域像素相比较，如下图所示，中间检测点与其同尺度的 8 个邻域像素点以及上下相邻两层对应的 9×2 个像素点一共 26 个点作比较，以确保在图像空间和尺度空间都能检测到极值点。一个像素点如果在 DoG 尺度空间本层及上下两层的 26 邻域中取得最大或最小值时，就可以认为该点是图像在该尺度下的一个特征点。</p>
+<p></p><figure id="_figure-4"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cextremum_DoG.png" data-desc-position="bottom"><img alt="Extremum of the DoG" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cextremum_DoG.png"></a><figcaption>Figure 4: Extremum of the DoG</figcaption></figure><p></p>
+<h5 id="_8">每组空间需要的层数<a class="headerlink" href="#_8" title="Permanent link">¶</a></h5>
+<p>如上所述，在极值比较的过程中，每一组差分图像的首末两层是无法比较的，为了在每组中检测 <span class="arithmatex">\(S\)</span> 个尺度的极值点，则 DoG 金字塔每组须有 <span class="arithmatex">\(S+2\)</span> 层图像，高斯金字塔每组须有 <span class="arithmatex">\(S+3\)</span> 层图像。另外，在降采样时，高斯金字塔中后一组 (Octive) 的底层图像是由前一组图像的倒数第 3 张图像 ( <span class="arithmatex">\(S+1\)</span> 层) 隔点采样得到。这样也保证了尺度变化的连续性，如下图所示：</p>
+<p></p><figure id="_figure-5"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cvariable_scale_Gaussian.png" data-desc-position="bottom"><img alt="variable scale Gaussian" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cvariable_scale_Gaussian.png"></a><figcaption>Figure 5: variable scale Gaussian</figcaption></figure><p></p>
+<p>根据上图，假设每组层数 <span class="arithmatex">\(S = 3\)</span>，则 <span class="arithmatex">\(k = 2^{\frac{S}{3}} = 2^{\frac{1}{3}}\)</span>，在高斯金字塔中，第一个 Octave 第 <span class="arithmatex">\(S + 1\)</span> 层图像的尺度为 <span class="arithmatex">\(k^3 \sigma = 2 \sigma\)</span>，经降采样后得到第二个 Octave 的第 1 层图像，尺度仍为 <span class="arithmatex">\(2 \sigma\)</span>。在 DoG 尺度空间中，第一组 (1 <span class="arithmatex">\(^{st}\)</span>-Octave) 图像中间三项的尺度分别为 <span class="arithmatex">\((k \sigma, k^2 \sigma, k^3 \sigma)\)</span>，下一组中间三项为 <span class="arithmatex">\((2k \sigma, 2k^2 \sigma, 2k^3 \sigma)\)</span>，其“首项” <span class="arithmatex">\(2k \sigma = 2^{\frac{4}{3}}\)</span>，与上一组“末项” <span class="arithmatex">\(k^3 \sigma = 2^{\frac{3}{3}} \sigma\)</span> 尺度变化连续，变化尺度为 <span class="arithmatex">\(k = 2^{\frac{1}{3}} = 2^{\frac{1}{3}}\)</span>。</p>
+<h4 id="_9">关键点定位<a class="headerlink" href="#_9" title="Permanent link">¶</a></h4>
+<p>在 DoG 尺度空间检测到的极值点是离散的，通过拟合三元二次函数可以精确定位关键点的位置和尺度，达到亚像素精度。同时去除低对比度的检测点和不稳定的边缘点 (因为 DoG 算子会产生较强的边缘响应) ，以增强匹配稳定性，提高抗噪声能力。</p>
+<h5 id="_10">关键点精细定位<a class="headerlink" href="#_10" title="Permanent link">¶</a></h5>
+<p>离散空间的极值点并不是真正的极值点，如下图所示一维函数离散空间得到的极值点与连续空间极值点的差别。利用已知的离散空间点插值得到的连续空间极值点的方法叫做子像素插值 (Sub-pixel Interpolation)</p>
+<p></p><figure id="_figure-6"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cextremum_in_continuous_vs_discrete.png" data-desc-position="bottom"><img alt="离散空间与连续空间极值点的区别" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cextremum_in_continuous_vs_discrete.png"></a><figcaption>Figure 6: 离散空间与连续空间极值点的区别</figcaption></figure><p></p>
+<p>主要包括两步，一步是通过在离散空间的极值点邻域进行泰勒二阶展开近似，令近似函数导数为 0，得到偏移 <span class="arithmatex">\(\Delta X\)</span>，这样精确的关键点坐标就是 <span class="arithmatex">\(X+\Delta X\)</span>；具体推导步骤如下：</p>
+<p>根据上图直观可知，它只是离散情况下的极值点，而连续情况下，极值点可能坐落在 <span class="arithmatex">\((x, y, \sigma)\)</span> 的附近，设连续情况下的正真极值点偏离 <span class="arithmatex">\((x, y, \sigma)\)</span> 的坐标为 <span class="arithmatex">\((\Delta x, \Delta y, \Delta \sigma)\)</span>。则对于正真极值点 <span class="arithmatex">\(D(x + \Delta x, y + \Delta y, \sigma + \Delta \sigma)\)</span> 可以在尺度空间 <span class="arithmatex">\(D(x, y, \sigma)\)</span> 处进行泰勒展开（依照 <span class="arithmatex">\(f(x + \Delta x) \approx f(x) + f'(x)\Delta x + f''(x)\Delta x^2\)</span> 保留二阶形式）：</p>
+<div class="arithmatex">\[
+D(x + \Delta x, y + \Delta y, \sigma + \Delta \sigma) \approx D(x, y, \sigma) + \begin{bmatrix}
+\frac{\partial D}{\partial x} &amp; \frac{\partial D}{\partial y} &amp; \frac{\partial D}{\partial \sigma}
+\end{bmatrix}
+\begin{bmatrix}
+\Delta x \\ \Delta y \\ \Delta \sigma
+\end{bmatrix}
++ \frac{1}{2} \begin{bmatrix}
+\Delta x &amp; \Delta y &amp; \Delta \sigma
+\end{bmatrix}
+\begin{bmatrix}
+\frac{\partial^2 D}{\partial x^2} &amp; \frac{\partial^2 D}{\partial x \partial y} &amp; \frac{\partial^2 D}{\partial x \partial \sigma} \\
+\frac{\partial^2 D}{\partial y \partial x} &amp; \frac{\partial^2 D}{\partial y^2} &amp; \frac{\partial^2 D}{\partial y \partial \sigma} \\
+\frac{\partial^2 D}{\partial \sigma \partial x} &amp; \frac{\partial^2 D}{\partial \sigma \partial y} &amp; \frac{\partial^2 D}{\partial \sigma^2}
+\end{bmatrix}
+\begin{bmatrix}
+\Delta x \\ \Delta y \\ \Delta \sigma
+\end{bmatrix}
+\]</div>
+<p>可以将上述写成矢量形式，得：</p>
+<div class="arithmatex">\[
+D(X + \Delta X) = D(X) + \frac{\partial D^\top(X)}{\partial X} \Delta X + \frac{1}{2} \Delta X^\top \frac{\partial^2 D(X)}{\partial X^2} \Delta X
+\]</div>
+<p>上述对 <span class="arithmatex">\(\Delta X\)</span> 求导，并令其等于零，可以得到极值点的偏移量：</p>
+<div class="arithmatex">\[
+\Delta X = -\frac{\partial^2 D(X)^{-1} \frac{\partial D^\top(X)}{\partial X}}{\partial X^2}
+\]</div>
+<p>当它在任一维度上（即 <span class="arithmatex">\(x\)</span> 或 <span class="arithmatex">\(y\)</span> 或 <span class="arithmatex">\(\sigma\)</span>）的偏移量大于 0.5 时，意味着插值中心已经偏移到它的邻近点上，所以必须改变当前关键点的位置。同时在新的位置上反复插值直到收敛，也有可能超出所设定的迭代次数或者超出图像边界的范围，此时这样的点应该删除。精确关键点处的函数值为：</p>
+<div class="arithmatex">\[
+D(\hat{X}) = D(X) + \frac{1}{2} \frac{\partial D^\top(X)}{\partial X} \Delta X
+\]</div>
+<p>第二步就是校验精细关键点坐标像素的响应值，如果 <span class="arithmatex">\(|D(\hat{X})|\)</span> 过小易受噪声点的干扰而变得不稳定，若其小于某个阈值（例如 0.03 或者 0.04/S），则将该极值点也应该删除。</p>
+<h5 id="_11">消除边缘效应<a class="headerlink" href="#_11" title="Permanent link">¶</a></h5>
+<p>高斯差分函数有较强的边缘响应，对于比较像边缘的点应该去除掉。这样的点的特征为在某个方向有较大主曲率，而在垂直的方向主曲率很小。主曲率可通过一个 <span class="arithmatex">\(2 \times 2\)</span> 的 Hessian 矩阵求出</p>
+<div class="arithmatex">\[
+H = \begin{bmatrix}
+D_{xx} &amp; D_{xy} \\
+D_{xy} &amp; D_{yy}
+\end{bmatrix}
+\]</div>
+<p><span class="arithmatex">\(D\)</span> 的主曲率和 <span class="arithmatex">\(H\)</span> 的特征值成正比，令 <span class="arithmatex">\(\alpha\)</span> 为较大特征值，<span class="arithmatex">\(\beta\)</span> 为较小特征值，且令 <span class="arithmatex">\(\alpha / \beta = r\)</span>，则</p>
+<div class="arithmatex">\[
+tr(H) = D_{xx} + D_{yy} = \alpha + \beta, \quad \det(H) = D_{xx}D_{yy} - D_{xy}^2 = \alpha \beta
+\]</div>
+<div class="arithmatex">\[
+\frac{tr(H)^2}{\det(H)} = \frac{(\alpha + \beta)^2}{\alpha \beta} = \frac{(r + 1)^2}{r}
+\]</div>
+<p><span class="arithmatex">\((r + 1)^2 / r\)</span> 在两个特征值相等时最小，随着 <span class="arithmatex">\(r\)</span> 的增大而增大，<span class="arithmatex">\(r\)</span> 值越大，说明两个特征值的比值越大，正好对应边缘的情况。因此，设定一个阈值 <span class="arithmatex">\(r_t\)</span>，若满足</p>
+<div class="arithmatex">\[
+\frac{tr(H)^2}{\det(H)} &lt; \frac{(r_t + 1)^2}{r_t}
+\]</div>
+<p>则认为该关键点不是边缘，否则予以剔除。</p>
+<h4 id="_12">关键点方向指定<a class="headerlink" href="#_12" title="Permanent link">¶</a></h4>
+<p>为了使特征描述子具有旋转不变性，需要利用关键点邻域像素的梯度方向分布特性为每个关键点指定方向参数。对于在 DoG 金字塔中检测出的关键点，在其邻近高斯金字塔图像的 <span class="arithmatex">\(3\sigma\)</span> 邻域窗口内计算其梯度幅值和方向，公式如下：</p>
+<div class="arithmatex">\[
+m(x, y) = \sqrt{(L(x + 1, y) - L(x - 1, y))^2 + (L(x, y + 1) - L(x, y - 1))^2}
+\]</div>
+<div class="arithmatex">\[
+\theta(x, y) = \arctan((L(x, y + 1) - L(x, y - 1))/(L(x + 1, y) - L(x - 1, y)))
+\]</div>
+<p>式中，<span class="arithmatex">\(L\)</span> 为关键点所在尺度空间的灰度值，<span class="arithmatex">\(m(x, y)\)</span> 为梯度幅值，<span class="arithmatex">\(\theta(x, y)\)</span> 为梯度方向。对于模值 <span class="arithmatex">\(m(x, y)\)</span> 按照 <span class="arithmatex">\(\sigma = 1.5\sigma_{oct}\)</span> 邻域窗口为 <span class="arithmatex">\(3\sigma = 3 \times 1.5\sigma_{oct}\)</span> 的高斯分布加权。在完成关键点的梯度计算后，使用直方图统计邻域内像素的梯度和方向，梯度直方图将梯度方向 <span class="arithmatex">\((0, 360^\circ)\)</span> 分为 36 柱 (bins)，如下图所示 (为简化，图中只画了八个方向的直方图)，直方图的峰值所在的方向代表了该关键点的主方向。</p>
+<p></p><figure id="_figure-7"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Chog.png" data-desc-position="bottom"><img alt="关键点方向直方图" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Chog.png"></a><figcaption>Figure 7: 关键点方向直方图</figcaption></figure><p></p>
+<p>1、怎么理解 “按 <span class="arithmatex">\(\sigma = 1.5\sigma_{oct}\)</span> 高斯分布加权”？</p>
+<p>这句话定义了我们如何看待关键点“周围”的像素。</p>
+<ul>
+<li>
+<p><span class="arithmatex">\(\sigma_{oct}\)</span> 是什么？</p>
+<p>这是我们在上一阶段（DoG 极值检测）中检测到的该特征点所在的固有尺度。</p>
+</li>
+<li>
+<p>比如，一个很大的光斑，可能在金字塔的高层被检测到，<span class="arithmatex">\(\sigma_{oct}\)</span> 很大（如 10.0）；</p>
+</li>
+<li>
+<p>一个很小的噪点或角点，在底层被检测到，<span class="arithmatex">\(\sigma_{oct}\)</span> 很小（如 1.6）。</p>
+</li>
+<li>
+<p>为什么是 <span class="arithmatex">\(1.5\sigma_{oct}\)</span>？</p>
+<p>这是一个经验值（David Lowe 实验得出的）。</p>
+<p>在计算方向时，我们认为邻域范围应该和特征点的尺度成正比。</p>
+</li>
+<li>
+<p>特征点越大，我们需要参考更广阔的区域来确定它的方向。</p>
+</li>
+<li>
+<p><span class="arithmatex">\(1.5\)</span> 是一个放大系数，意味着用于统计方向的“高斯窗口”比特征点本身的尺度要稍大宽阔一些，以包含足够的结构信息。</p>
+</li>
+<li>
+<p>什么是“高斯分布加权”？</p>
+<p>我们在统计周围像素的梯度方向时，不是民主投票（每人一票），而是加权投票。</p>
+</li>
+<li>
+<p><strong>离关键点近的像素</strong>：权重高，对主方向的贡献大。</p>
+</li>
+<li>
+<p><strong>离关键点远的像素</strong>：权重低，贡献小。</p>
+</li>
+<li>
+<p><strong>权重公式</strong>：</p>
+<div class="highlight"><pre><span></span><code>$$  W(x, y) = e^{-\frac{d^2}{2(1.5\sigma_{oct})^2}}$$
+
+其中 $d$ 是像素 $(x, y)$ 到关键点中心的距离。
+</code></pre></div>
+</li>
+</ul>
+<p>2、邻域窗口 “<span class="arithmatex">\(3\sigma\)</span>” 是什么意思？用了多少个像素？</p>
+<p>这决定了我们统计范围的 <strong>边界</strong>。</p>
+<ul>
+<li>
+<p><strong>理论范围</strong>：高斯函数理论上是无穷大的，但离中心越远值越小。</p>
+</li>
+<li>
+<p><strong><span class="arithmatex">\(3\sigma\)</span> 原则</strong>：在正态分布中，距离中心 <span class="arithmatex">\(3\sigma\)</span> 以外的概率密度仅占不到 0.3%，几乎可以忽略不计。</p>
+</li>
+<li>
+<p>实际操作：</p>
+<p>为了节省计算量，我们只统计半径为 <span class="arithmatex">\(r = 3 \times (1.5\sigma_{oct})\)</span> 圆内的像素。</p>
+</li>
+<li>
+<p>这里的 <span class="arithmatex">\(\sigma\)</span> 指的是高斯加权函数的 <span class="arithmatex">\(\sigma\)</span>（即 <span class="arithmatex">\(1.5\sigma_{oct}\)</span>）。</p>
+</li>
+<li>
+<p>所以搜索半径 <span class="arithmatex">\(R_{search} \approx 3 \times 1.5 \times \sigma_{oct} = 4.5 \sigma_{oct}\)</span>。</p>
+</li>
+<li>
+<p>直方图统计的具体计算流程</p>
+</li>
+</ul>
+<p>这是最关键的算法实现步骤。假设我们现在要计算一个关键点的主方向：</p>
+<p><strong>第一步：确定统计区域</strong></p>
+<p>根据该关键点的尺度 <span class="arithmatex">\(\sigma_{oct}\)</span>，确定半径 <span class="arithmatex">\(R \approx 4.5 \sigma_{oct}\)</span>。我们遍历以关键点为中心，边长为 <span class="arithmatex">\(2R+1\)</span> 的正方形区域内的所有像素。</p>
+<p><strong>第二步：逐个像素计算 (Gradient Calculation)</strong></p>
+<p>对于区域内的每一个像素 <span class="arithmatex">\((x, y)\)</span>，利用公式（你图片中的公式）计算两个值：</p>
+<ol>
+<li><strong>梯度幅值</strong> <span class="arithmatex">\(m(x,y)\)</span>：代表梯度的强度（边缘越强，值越大）。</li>
+<li><strong>梯度方向</strong> <span class="arithmatex">\(\theta(x,y)\)</span>：代表梯度的角度（<span class="arithmatex">\(0^\circ \sim 360^\circ\)</span>）。</li>
+</ol>
+<p><strong>第三步：计算权重 (Weighting)</strong></p>
+<p>计算该像素到关键点的距离，代入高斯公式计算权重 <span class="arithmatex">\(W(x, y)\)</span>。</p>
+<div class="arithmatex">\[\text{VoteValue} = m(x, y) \times W(x, y)\]</div>
+<p><em>这步就是“高斯加权”的体现：离中心越近，<span class="arithmatex">\(m(x,y)\)</span> 被保留得越多。</em></p>
+<p><strong>第四步：直方图投票 (Binning)</strong></p>
+<p>我们建立一个有 <strong>36 个柱子 (Bins)</strong> 的直方图：</p>
+<ul>
+<li>Bin 0: <span class="arithmatex">\(0^\circ \sim 10^\circ\)</span></li>
+<li>Bin 1: <span class="arithmatex">\(10^\circ \sim 20^\circ\)</span></li>
+<li>...</li>
+<li>Bin 35: <span class="arithmatex">\(350^\circ \sim 360^\circ\)</span></li>
+</ul>
+<p>操作：</p>
+<p>如果是像素 <span class="arithmatex">\(A\)</span>，算出方向是 <span class="arithmatex">\(15^\circ\)</span>，幅值加权后是 <span class="arithmatex">\(10.5\)</span>。</p>
+<p>那么就在 Bin 1 的柱子上加上 <span class="arithmatex">\(10.5\)</span> 的高度。</p>
+<p><strong>第五步：找主方向 (Peak Finding)</strong></p>
+<p>遍历完所有像素后，看哪个柱子最高。</p>
+<ul>
+<li><strong>最高峰</strong>：该柱子代表的方向就是 <strong>主方向</strong>。</li>
+<li><strong>辅方向</strong>：如果有其他柱子的高度达到了最高峰的 <strong>80%</strong>，那么该方向会被认定为辅方向（这会生成一个位置相同但方向不同的新关键点）。</li>
+</ul>
+<p><span style="background:#6fe7dd;">至此，将检测出的含有位置、尺度和方向的关键点即是该图像的SIFT特征点。</span></p>
+<h4 id="_13">关键点特征描述子<a class="headerlink" href="#_13" title="Permanent link">¶</a></h4>
+<p>经过上述流程后，检测到的每个关键点有 3 个信息：<strong>位置（像素坐标）、尺度、以及方向</strong>。接下来就是为每一个关键点建立一个描述符，用一组向量将这个关键点描述出来。这个特征描述子不但包括关键点，还包括其邻域像素的贡献，而且需要具备较高的独特性和稳定性，以提高特征点匹配的准确率。</p>
+<p>SIFT 特征描述子是关键点邻域梯度经过高斯加权后统计结果的一种表示。通过对关键点周围像素区域分块，计算块内的梯度直方图，得到表示局部特征点信息的特征向量。例如在尺度空间 <span class="arithmatex">\(4\times4\)</span> 的窗口内统计 8 个方向的梯度直方图，生成一个 <span class="arithmatex">\(4\times4\times8=128\)</span> 维的表示向量</p>
+<h5 id="_14">确定计算描述子所需的图像区域<a class="headerlink" href="#_14" title="Permanent link">¶</a></h5>
+<p>特征描述子与特征点所在的尺度有关，因此，对梯度的求取应在特征点对应的高斯图像上进行。将关键点附近的邻域划分为 <span class="arithmatex">\(d×d(d=4)\)</span> 个子区域，每个子区域的边长设定为 <span class="arithmatex">\(3\sigma_{oct}\)</span>（<span class="arithmatex">\(\sigma_{oct}\)</span> 是关键点所在的尺度）, 同时为了保证这个区域旋转后，依然在我们的子区域内部，我们需要的图像区域半径应该是：</p>
+<div class="arithmatex">\[
+radius = \frac{3\sigma_{oct}  \times (d+1)}{2} \times \sqrt{2}
+\]</div>
+<p></p><figure id="_figure-8"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Crotation_region.png" data-desc-position="bottom"><img alt="旋转引起的领域半径变化" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Crotation_region.png"></a><figcaption>Figure 8: 旋转引起的领域半径变化</figcaption></figure><p></p>
+<p>d+1 是为了防止插值时的边界溢出，相当于为正方体的关键点周围的 <span class="arithmatex">\(d \times d\)</span> 的子区域划分一个外接圆区域，这样不管关键点方向怎么旋转，都不会超出这个范围；</p>
+<h5 id="_15">旋转坐标轴至关键点主方向<a class="headerlink" href="#_15" title="Permanent link">¶</a></h5>
+<p>为了实现关键点描述子的旋转不变性，在计算描述子的时候，我们以关键点的主方向来重写确立坐标系，将新坐标系的 <span class="arithmatex">\(x’\)</span> 轴指向关键点的主方向，这样关键点描述子的计算就和主方向挂钩了，就具备了方向不变性。</p>
+<p></p><figure id="_figure-9"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Crotate_coordinate.png" data-desc-position="bottom"><img alt="坐标轴旋转" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Crotate_coordinate.png"></a><figcaption>Figure 9: 坐标轴旋转</figcaption></figure><p></p>
+<p>旋转后采样点的新坐标为：</p>
+<div class="arithmatex">\[
+\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix}
+\]</div>
+<p>其中 <span class="arithmatex">\(\theta\)</span> 是关键点的主方向角度，<span class="arithmatex">\((x, y)\)</span> 是 <strong>采样点在采样区域内的相对坐标</strong>（范围在 <span class="arithmatex">\([-radius, radius]\)</span> 内）。</p>
+<h5 id="dtimes-d">对 <span class="arithmatex">\(d\times d\)</span> 的每个子区域计算梯度幅值与方向并进行高斯加权<a class="headerlink" href="#dtimes-d" title="Permanent link">¶</a></h5>
+<p>在旋转后的坐标系中，对区域内的每个像素点计算梯度性质：</p>
+<ul>
+<li>
+<p>梯度计算：利用像素的差分计算幅值 <span class="arithmatex">\(m(x,y)\)</span> 和方向 <span class="arithmatex">\(\theta(x,y)\)</span>：</p>
+<div class="arithmatex">\[
+m(x, y) = \sqrt{(L(x+1, y)-L(x-1, y))^2 + (L(x, y+1)-L(x, y-1))^2}
+\]</div>
+<div class="arithmatex">\[
+\theta(x, y) = \arctan \frac{L(x, y+1)-L(x, y-1)}{L(x+1, y)-L(x-1, y)}
+\]</div>
+</li>
+<li>
+<p>高斯加权：为了强调靠近关键点中心的像素，降低远处像素的影响（防止小幅度的位置误差导致描述子突变），需要对梯度幅值进行高斯加权：</p>
+<div class="arithmatex">\[
+w = m(u+x, b+y) \times e^{-\frac{x'^2 + y'^2}{2\sigma_w^2}}
+\]</div>
+<p>其中 <span class="arithmatex">\(x', y'\)</span> 是旋转后的坐标，这一步确保了描述子中心的权重最大。其中 <span class="arithmatex">\((u, b)\)</span> 是关键点在图像中的全局像素坐标，<span class="arithmatex">\((x,y)\)</span> 是采样区域内（指的是关键点周围 <span class="arithmatex">\(d \times d\)</span> 计算描述子的区域）相对关键点的局部坐标，<span class="arithmatex">\((u+x,b+y)\)</span> 就是 <span class="arithmatex">\((x, y)\)</span> 在图像中的全局像素坐标，<span class="arithmatex">\(m(u+x, b+y)\)</span> 从梯度图中获取该像素点的幅值，然后根据其 <strong>旋转后的局部坐标</strong> 到关键点的距离进行高斯加权，得到这个像素点的加权幅值 <span class="arithmatex">\(w\)</span>，然后根据<strong>这个像素点到 d *d 个子区域，以及梯度方向 <span class="arithmatex">\(\theta\)</span> 到(0,45,90,135,180,225,270,315)共 8 个方向的距离远近进行线性加权</strong>，也就是三线性插值，将 <span class="arithmatex">\(w\)</span> 分配到这 8 个 bin 中，得到 <span class="arithmatex">\(d*d*8\)</span> 维的向量，就是 SIFT 的关键点特征描述子</p>
+</li>
+</ul>
+<h5 id="trilinear-interpolation">三线性插值 (Trilinear Interpolation) —— 核心步骤<a class="headerlink" href="#trilinear-interpolation" title="Permanent link">¶</a></h5>
+<p>这是 SIFT 描述子稳定性的关键。简单的直方图统计会导致边界效应（例如一个点稍微移动一点就从一个 bin 跳到另一个 bin，导致特征突变）。SIFT 使用 <strong>三线性插值</strong> 将一个像素的贡献分配到相邻的子区域和方向 bin 中。</p>
+<ul>
+<li>
+<p><strong>三个维度</strong>：行（row）、列（col）、梯度方向 <span class="arithmatex">\(\theta\)</span>（orientation）。</p>
+</li>
+<li>
+<p>归一化坐标：将旋转后的采样点 <span class="arithmatex">\((x', y')\)</span> 映射到 <span class="arithmatex">\(4 \times 4\)</span> 的子区域坐标系中：</p>
+<div class="arithmatex">\[
+\begin{bmatrix} x_d \\ y_d \end{bmatrix} = \frac{1}{3\sigma_{oct}} \begin{bmatrix} x' \\ y' \end{bmatrix} + \frac{d}{2}
+\]</div>
+</li>
+<li>
+<p>插值计算：一个像素的梯度幅值不仅仅投给它所在的那个格子，而是根据距离按比例分配给最近的 <span class="arithmatex">\(2 \times 2 \times 2 = 8\)</span> 个邻居（空间上相邻的子区域，和方向上相邻的柱子）。</p>
+<p>权重公式为：</p>
+<p>$$</p>
+</li>
+</ul>
+<p>weight = w \cdot d_r^{1-i} (1-d_r)^i \cdot d_c^{1-j} (1-d_c)^j \cdot d_o^{1-k} (1-d_o)^k
+    $$
+这保证了特征值的平滑过渡。</p>
+<h5 id="_16">生成描述子向量<a class="headerlink" href="#_16" title="Permanent link">¶</a></h5>
+<ul>
+<li>
+<p><strong>统计直方图</strong>：</p>
+</li>
+<li>
+<p>一共有 <span class="arithmatex">\(4 \times 4 = 16\)</span> 个子区域。</p>
+</li>
+<li>
+<p>每个子区域统计 8 个方向的梯度直方图。</p>
+</li>
+<li>
+<p>向量拼接：</p>
+<p>最终的描述子维度为：<span class="arithmatex">\(4 \times 4 \times 8 = 128 \text{维}\)</span>，这 128 个数值构成了 SIFT 特征向量。总的来说，就是把 d*d 子区域内的每个像素的梯度幅值按照到关键点距离高斯加权后，再根据到每个子区域的行、列距离、梯度方向三个维度进行线性加权，分配到不同子区域的 8 个 bin 中。</p>
+</li>
+</ul>
+<h5 id="_17">向量归一化 (去除光照影响)<a class="headerlink" href="#_17" title="Permanent link">¶</a></h5>
+<p>为了消除光照变化带来的非线性影响，需要对生成的 128 维向量进行处理：</p>
+<ol>
+<li><strong>初次归一化</strong>：将向量长度归一化为 1（消除图像整体亮度变化，如 <span class="arithmatex">\(I \to aI\)</span> 的影响）。</li>
+<li><strong>阈值截断</strong>：将向量中大于 <strong>0.2</strong> 的元素强制设为 0.2。<ul>
+<li><em>目的</em>：非线性光照（如相机饱和、高光反射）会导致某些梯度幅值过大，截断可以抑制这种影响。</li>
+</ul>
+</li>
+<li><strong>再次归一化</strong>：对截断后的向量再次进行归一化。</li>
+</ol>
+<p>至此，一个具有尺度、旋转、光照不变性的 SIFT 关键点描述子就计算完成了。</p>
+<h3 id="surf">SURF<a class="headerlink" href="#surf" title="Permanent link">¶</a></h3>
+<p>SURF（Speed Up Robust Features）是一种稳健的局部特征点检测和描述算法，核心目标是保持类似 SIFT（Scale-Invariant Feature Transform）的尺度不变性和旋转不变性的同时，极大的提高计算速度。主要是通过积分图（Integral Images）和盒状滤波器（Box Filters）来加速计算。</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>ORB (定向 FAST 和旋转 BRIEF)</strong></th>
+<th><strong>SIFT (尺度不变特征变换)</strong></th>
+<th><strong>SURF (加速稳健特征)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>核心检测器</strong></td>
+<td>FAST (基于亮度比较)</td>
+<td>DoG (高斯差分)</td>
+<td><strong>Fast-Hessian (近似 Hessian 矩阵)</strong></td>
+</tr>
+<tr>
+<td><strong>核心描述子</strong></td>
+<td>BRIEF (二进制串)</td>
+<td>梯度直方图 (128 维)</td>
+<td><strong>Haar 小波响应 (64 维)</strong></td>
+</tr>
+<tr>
+<td><strong>计算速度</strong></td>
+<td>极快 (约为 SIFT 的 100 倍)</td>
+<td>慢 (基准)</td>
+<td><strong>快 (约为 SIFT 的 3 倍)</strong></td>
+</tr>
+<tr>
+<td><strong>尺度不变性</strong></td>
+<td>较弱 (需图像金字塔辅助)</td>
+<td>优秀</td>
+<td><strong>优秀</strong></td>
+</tr>
+<tr>
+<td><strong>旋转不变性</strong></td>
+<td>一般</td>
+<td>优秀</td>
+<td><strong>优秀</strong></td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>极端实时系统 (如手机端 SLAM)</td>
+<td>高精度匹配、图像检索</td>
+<td><strong>实时性要求较高的物体识别、SLAM</strong></td>
+</tr>
+<tr>
+<td><strong>数据类型</strong></td>
+<td>二进制字符串 (Hamming 距离)</td>
+<td>浮点型向量</td>
+<td><strong>浮点型向量</strong></td>
+</tr>
+</tbody>
+</table>
+<p>SURF 之所以快，主要依赖两个数学工具：</p>
+<ol>
+<li>
+<p>积分图 (Integral Images)：积分图允许我们在 <span class="arithmatex">\(O(1)\)</span> 的时间复杂度内计算图像中任意矩形区域的像素和。定义积分图 <span class="arithmatex">\(I_{\Sigma}(x, y)\)</span> 为图像 <span class="arithmatex">\(I\)</span> 中坐标 <span class="arithmatex">\((x, y)\)</span> 左上角所有像素之和：</p>
+<div class="arithmatex">\[
+I_{\Sigma}(x, y) = \sum_{i = 0}^{x} \sum_{j = 0}^{y} I(i, j)
+\]</div>
+<p>这使得后续所有的盒状滤波器操作速度与滤波器的大小无关。</p>
+</li>
+<li>
+<p>Hessian 矩阵的近似 (Box Filter Approximation)：SIFT 使用 DoG 近似 LoG，而 <strong>SURF 使用盒状滤波器近似二阶高斯导数</strong>，从而快速计算 Hessian 矩阵的行列式来检测极值点（斑点检测）。</p>
+</li>
+</ol>
+<p>SURF 的流程主要分为两个阶段：特征点检测和特征点描述</p>
+<h4 id="_18">特征点检测<a class="headerlink" href="#_18" title="Permanent link">¶</a></h4>
+<h5 id="hessian">Hessian 矩阵近似<a class="headerlink" href="#hessian" title="Permanent link">¶</a></h5>
+<p>第一步，构建 Hessian 矩阵，对于图像中的一点 <span class="arithmatex">\((x,y)\)</span> 在尺度 <span class="arithmatex">\(\sigma\)</span> 下，其 Hessian 矩阵定义为：</p>
+<div class="arithmatex">\[
+H(x, \sigma) = \begin{bmatrix} L_{xx}(x, \sigma) &amp; L_{xy}(x, \sigma) \\ L_{xy}(x, \sigma) &amp; L_{yy}(x, \sigma) \end{bmatrix}
+\]</div>
+<p>其中 <span class="arithmatex">\(L_{xx}\)</span> 等是高斯二阶偏导数与图像的卷积。图像点的二阶微分 Hessian 矩阵的行列式 (Determinant of Hessian, DoH) 极大值，可用于图像的斑点检测 (Blob Detection) 。由于特征点需要尺度无关性，所以在进行 Hessian 矩阵构造前，需要对其进行高斯滤波。</p>
+<p>第二步，使用盒状滤波器近似。为了加速，SURF 使用方框滤波器（Box Filter）代替高斯滤波器（也就是用离散值替代连续的高斯卷积核，高斯二阶偏导数卷积核类似墨西哥草帽形状，从中心往外先高再低再高，用离散卷积核简化就是+1 -2 +1，符合这个模板特点的图像区域卷积响应值就比较大，会被我们检测到，而由于我们预先计算好了积分图，这个简化的卷积运算就会非常快，只需要查积分图进行简单加减法就可以）</p>
+<ul>
+<li><span class="arithmatex">\(L_{xx}\)</span> 近似为 <span class="arithmatex">\(D_{xx}\)</span></li>
+<li><span class="arithmatex">\(L_{yy}\)</span> 近似为 <span class="arithmatex">\(D_{yy}\)</span></li>
+<li><span class="arithmatex">\(L_{xy}\)</span> 近似为 <span class="arithmatex">\(D_{xy}\)</span></li>
+</ul>
+<p>这些 <span class="arithmatex">\(D\)</span> 值可以在积分图上通过简单的加减法快速求得。</p>
+<p>标准 Hessian 矩阵行列式：</p>
+<div class="arithmatex">\[
+Det(H) = L_{xx} L_{yy} - L_{xy}^2
+\]</div>
+<p>近似公式</p>
+<div class="arithmatex">\[
+Det(H_{approx}) = D_{xx} D_{yy} - (w \cdot D_{xy})^2
+\]</div>
+<p><span class="arithmatex">\(w\)</span> 是根据 Frobenius 范数算出来的理论近似值，减少近似误差</p>
+<p>使用近似的 Hessian 矩阵行列式来表示一个图像中某一点处的斑点响应值，遍历图像中的所有像素，便形成了在某一尺度下斑点检测的响应图像。使用不同的模糊尺度和模板尺寸，便形成了多尺度斑点响应的金字塔图像，利用这一金字塔图像，可以进行斑点响应极值点的搜索定位，其过程与 SIFT 算法类似。</p>
+<h5 id="_19">尺度空间的表示<a class="headerlink" href="#_19" title="Permanent link">¶</a></h5>
+<p>要想检测不同尺度的极值点，必须建立图像的尺度空间金字塔。一般的方法是通过采用不同 σ 的高斯函数，对图像进行平滑滤波，然后降采样获得更高一组 (Octave) 的金字塔图像。SIFT 算法中就是通过相邻两层 (Interval) 高斯金字塔图像相减得到 DoG 图像，然后在 DoG 金字塔图像上进行特征点检测。与 SIFT 特征不同的是，SURF 算法不需要通过降采样的方式得到不同尺寸大小的图像建立金字塔，而是借助于盒子滤波和积分图像，不断增大盒子滤波模板，通过积分图快速计算盒子滤波的响应图像。SURF 采用这种方法节省了降采样过程，然后在响应图像上采用非极大值抑制，检测不同尺度的特征点。SIFT 算法的 LoG 金字塔和 SURF 算法的近似 DoH 金字塔如下图所示。</p>
+<p></p><figure id="_figure-10"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cpyramid_LoG_VS_DoH.png" data-desc-position="bottom"><img alt="LoG 与 DoH 金字塔对比" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cpyramid_LoG_VS_DoH.png"></a><figcaption>Figure 10: LoG 与 DoH 金字塔对比</figcaption></figure><p></p>
+<p>由于使用积分图和盒子滤波器来加速，增加盒子滤波器的尺寸并不会带来计算量大的提升，但是原始 SIFT 使用原生的高斯卷积核，计算量和卷积核面积成正比，所以只能通过对图像降采样来实现尺度变化。</p>
+<p>标准的 SURF 滤波器尺寸变化配置：</p>
+<table>
+<thead>
+<tr>
+<th><strong>组别 (Octave)</strong></th>
+<th><strong>层数 (Layer)</strong></th>
+<th><strong>滤波器尺寸 (L×L)</strong></th>
+<th><strong>当前组步长 (Step)</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Octave 1</strong></td>
+<td>Layer 1</td>
+<td><strong>9</strong> <span class="arithmatex">\(\times\)</span> 9</td>
+<td><strong>6</strong></td>
+<td>基础尺度 <span class="arithmatex">\(\sigma=1.2\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 2</td>
+<td><strong>15</strong> <span class="arithmatex">\(\times\)</span> 15</td>
+<td></td>
+<td><span class="arithmatex">\(9 + 6\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 3</td>
+<td><strong>21</strong> <span class="arithmatex">\(\times\)</span> 21</td>
+<td></td>
+<td><span class="arithmatex">\(15 + 6\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 4</td>
+<td><strong>27</strong> <span class="arithmatex">\(\times\)</span> 27</td>
+<td></td>
+<td><span class="arithmatex">\(21 + 6\)</span></td>
+</tr>
+<tr>
+<td><strong>Octave 2</strong></td>
+<td>Layer 1</td>
+<td><strong>15</strong> <span class="arithmatex">\(\times\)</span> 15</td>
+<td><strong>12</strong></td>
+<td>步长翻倍 (<span class="arithmatex">\(6 \times 2\)</span>)</td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 2</td>
+<td><strong>27</strong> <span class="arithmatex">\(\times\)</span> 27</td>
+<td></td>
+<td><span class="arithmatex">\(15 + 12\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 3</td>
+<td><strong>39</strong> <span class="arithmatex">\(\times\)</span> 39</td>
+<td></td>
+<td><span class="arithmatex">\(27 + 12\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 4</td>
+<td><strong>51</strong> <span class="arithmatex">\(\times\)</span> 51</td>
+<td></td>
+<td><span class="arithmatex">\(39 + 12\)</span></td>
+</tr>
+<tr>
+<td><strong>Octave 3</strong></td>
+<td>Layer 1</td>
+<td><strong>27</strong> <span class="arithmatex">\(\times\)</span> 27</td>
+<td><strong>24</strong></td>
+<td>步长翻倍 (<span class="arithmatex">\(6 \times 2^2\)</span>)</td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 2</td>
+<td><strong>51</strong> <span class="arithmatex">\(\times\)</span> 51</td>
+<td></td>
+<td><span class="arithmatex">\(27 + 24\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 3</td>
+<td><strong>75</strong> <span class="arithmatex">\(\times\)</span> 75</td>
+<td></td>
+<td><span class="arithmatex">\(51 + 24\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 4</td>
+<td><strong>99</strong> <span class="arithmatex">\(\times\)</span> 99</td>
+<td></td>
+<td><span class="arithmatex">\(75 + 24\)</span></td>
+</tr>
+<tr>
+<td><strong>Octave 4</strong></td>
+<td>Layer 1</td>
+<td><strong>51</strong> <span class="arithmatex">\(\times\)</span> 51</td>
+<td><strong>48</strong></td>
+<td>步长翻倍 (<span class="arithmatex">\(6 \times 2^3\)</span>)</td>
+</tr>
+<tr>
+<td></td>
+<td>Layer 2</td>
+<td><strong>99</strong> <span class="arithmatex">\(\times\)</span> 99</td>
+<td></td>
+<td><span class="arithmatex">\(51 + 48\)</span></td>
+</tr>
+<tr>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+<p>不同滤波器尺寸采用的尺度 <span class="arithmatex">\(\sigma\)</span> 和滤波器尺寸成正比：</p>
+<div class="arithmatex">\[
+\sigma \approx \frac{1.2}{9} \times L
+\]</div>
+<h5 id="_20">关键点定位<a class="headerlink" href="#_20" title="Permanent link">¶</a></h5>
+<p>和 LoG、DoG 类似，建立尺度空间后，需要搜索定位关键点。将经过 box filter 处理过的响应图像中每个像素点与其 3 维邻域中的 26 个像素点进行比较，若是最极大值点，则认为是该区域的局部特征点。然后，采用 3 维线性插值法得到亚像素级的特征点，同时去掉一些小于给定阈值的点，使得极值检测出来的特征点更稳健。和 DoG 不同的是，不需要剔除边缘导致的极值点，因为 Hessian 矩阵的行列式已经考虑了边缘的问题。</p>
+<h4 id="_21">特征点方向分配<a class="headerlink" href="#_21" title="Permanent link">¶</a></h4>
+<p>为了保证特征描述子具有旋转不变性，与 SIFT 一样，需要对每个特征点分配一个主方向。为此，在以特征点为中心，以 <span class="arithmatex">\(6s\)</span> ( <span class="arithmatex">\(s=1.2×L/9\)</span> 为特征点的尺度) 为半径的区域内，计算图像的 <strong>Haar 小波响应</strong>，实际上就是对图像进行梯度运算，只不过需要利用积分图，提高梯度计算效率。求 Haar 小波响应的图像区域和 Haar 小波模板如下图所示，用于计算梯度的 Haar 小波的尺度是 <span class="arithmatex">\(4s\)</span> ，扫描步长为 <span class="arithmatex">\(s\)</span> 。</p>
+<p></p><figure id="_figure-11"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Ccalculate_Haar.png" data-desc-position="bottom"><img alt="Haar 小波响应计算" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Ccalculate_Haar.png"></a><figcaption>Figure 11: Haar 小波响应计算</figcaption></figure><p></p>
+<p>使用 <span class="arithmatex">\(σ=2s\)</span> 的高斯函数对 Haar 小波的响应值进行加权。为了求取主方向，设计一个以特征点为中心，张角为 π/3 的扇形窗口，如下图所示，以一定旋转角度 <span class="arithmatex">\(θ\)</span> 旋转窗口，并对窗口内的 Haar 小波响应值 <span class="arithmatex">\(dx、dy\)</span> 进行累加，得到一个矢量 <span class="arithmatex">\((m_w,θ_w)\)</span>：</p>
+<div class="arithmatex">\[
+m_w =\sum_wdx+\sum_wdy
+\]</div>
+<div class="arithmatex">\[
+\theta_w = arctan\left(\frac{\sum_wdy}{\sum_wdx}\right)
+\]</div>
+<p>主方向为最大 Haar 响应累加值所对应的方向，即 <span class="arithmatex">\(θ=θ_w|max(m_w)\)</span> 如下图所示:</p>
+<p></p><figure id="_figure-12"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Corientation_of_SUFT.png" data-desc-position="bottom"><img alt="统计旋转窗口内 Haar 小波响应值和" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Corientation_of_SUFT.png"></a><figcaption>Figure 12: 统计旋转窗口内 Haar 小波响应值和</figcaption></figure><p></p>
+<p>仿照 SIFT 求主方向时策略，当存在大于主峰值 80% 以上的峰值时，则将对应方向认为是该特征点的辅方向。一个特征点可能会被指定多个方向，可以增强匹配的鲁棒性。</p>
+<h4 id="_22">特征描述子<a class="headerlink" href="#_22" title="Permanent link">¶</a></h4>
+<p>生成特征点描述子时，同样需要计算图像的 Haar 小波响应。与确定主方向不同的是，这里不再使用圆形区域，而是在一个矩形区域计算 Haar 小波响应。以特征点为中心，沿主方向将 <span class="arithmatex">\(20s×20s\)</span> 的邻域划分为 <span class="arithmatex">\(4×4\)</span> 个子块，每个子块利用尺寸为 <span class="arithmatex">\(2s\)</span> 的 Haar 模板计算响应值，然后对响应值统计 <span class="arithmatex">\(∑dx 、∑|dx| 、∑dy、∑|dy|\)</span> 形成特征向量，如下图所示：</p>
+<p></p><figure id="_figure-13"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cdescriptor_SUFT.png" data-desc-position="bottom"><img alt="特征描述子生成" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cdescriptor_SUFT.png"></a><figcaption>Figure 13: 特征描述子生成</figcaption></figure><p></p>
+<p>算法步骤：</p>
+<ul>
+<li>将 20s 的窗口划分为 4×4 个子窗口，每个子窗口大小为 5s×5s，使用尺寸为 2s 的 Haar 小波计算子窗口的响应值</li>
+<li>以特征点为中心，用 <span class="arithmatex">\(σ=10s/3=3.3s\)</span> 的高斯核函数对 <span class="arithmatex">\(dx 、dy\)</span> 进行加权计算</li>
+<li>分别对每个子块的加权响应值进行统计，得到每个子块的向量：</li>
+</ul>
+<div class="arithmatex">\[
+v_i =\left [∑dx \quad ∑|dx| \quad ∑dy \quad ∑|dy|\right]
+\]</div>
+<p>由于共有 4×4 个子块，因此，特征描述子共由 4×4×4 = 64 维特征矢量组成。SURF 描述子不仅具有尺度和旋转不变性，还具有光照不变性，这由小波响应本身决定，而对比度不变性则是通过将特征向量归一化来实现。下图为 3 种简单模式图像及其对应的特征描述子，可以看出，引入 Haar 小波响应绝对值的统计和是必要的，否则只计算 <span class="arithmatex">\(∑dx 、∑dy\)</span> 的话，第一幅图和第二幅图的特征表现形式是一样的，因此，采用 4 个统计量描述子区域使特征更具有区分度。</p>
+<p></p><figure id="_figure-14"><a class="glightbox" data-type="image" data-width="100%" data-height="auto" href="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cdiff_result_in_descriptor_of_SUFT%20.png" data-desc-position="bottom"><img alt="不同的图像密度模式得到的不同的描述子结果" src="https://cdn.jsdelivr.net/gh/Gongzihang6/Pictures@main/Medias/2025%5C12%5Cdiff_result_in_descriptor_of_SUFT%20.png"></a><figcaption>Figure 14: 不同的图像密度模式得到的不同的描述子结果</figcaption></figure><p></p>
+<p>为了充分利用积分图像计算 Haar 小波的响应值，在具体实现中，并不是直接通过旋转 Haar 小波模板求其响应值，而是在积分图像上先使用水平和垂直的 Haar 模板求得响应值 <span class="arithmatex">\(dx 、dy\)</span> ，对 <span class="arithmatex">\(dx 、dy\)</span> 进行高斯加权处理，并根据主方向的角度，对 <span class="arithmatex">\(dx 、dy\)</span> 进行旋转变换，从而得到旋转后的 <span class="arithmatex">\(dx′ 、dy′\)</span> 。</p>
+<h4 id="surf-sift">SURF 与 SIFT 的对比<a class="headerlink" href="#surf-sift" title="Permanent link">¶</a></h4>
+<ul>
+<li>尺度空间：SIFT 使用 DoG 金字塔与图像进行卷积操作，而且对图像有做降采样处理；SURF 是用近似 DoH 金字塔 (即不同尺度的 box filters) 与图像做卷积，借助积分图，实际操作只涉及到数次简单的加减运算，而且不改变图像大小。</li>
+<li>特征点检测：SIFT 是先进行非极大值抑制，去除对比度低的点，再通过 Hessian 矩阵剔除边缘点。而 SURF 是计算 Hessian 矩阵的行列式值 (DoH) ，再进行非极大值抑制。</li>
+<li>特征点主方向：SIFT 在方形邻域窗口内统计梯度方向直方图，并对梯度幅值加权，取最大峰对应的方向；SURF 是在圆形区域内，计算各个扇形范围内 x 、y 方向的 Haar 小波响应值，确定响应累加和值最大的扇形方向。</li>
+<li>特征描述子：SIFT 将关键点附近的邻域划分为 4×4 的区域，统计每个子区域的梯度方向直方图，连接成一个 4×4×8 = 128 维的特征向量；SURF 将 20s×20s 的邻域划分为 4×4 个子块，计算每个子块的 Haar 小波响应，并统计 4 个特征量，得到 4×4×4 = 64 维的特征向量</li>
+</ul>
+<p>总体来说，SURF 和 SIFT 算法在特征点的检测取得了相似的性能，SURF 借助积分图，将模板卷积操作近似转换为加减运算，在计算速度方面要优于 SIFT 特征。</p>
+<hr>
+<p>2、设计程序调用 OpenCV 中的其他种类特征点。统计在提取 1000 个特征点时在你的机器上所用的时间。</p>
+<p>3、我们发现，OpenCV 提供的 ORB 特征点在图像中分布不够均匀。你是否能够找到或提出让特征点分布更均匀的方法？</p>
+<p>4、研究 FLANN 为何能够快速处理匹配问题。除了 FLANN，还有哪些可以加速匹配的手段？</p>
+<p>5、把演示程序使用的 EPnP 改成其他 PnP 方法，并研究它们的工作原理。</p>
+<p>6、在 PnP 优化中，将第一个相机的观测也考虑进来，程序应如何书写？最后结果会有何变化？</p>
+<p>7、在 ICP 程序中，将空间点也作为优化变量考虑进来，程序应如何书写？最后结果会有何变化？</p>
+<p>8、在特征点匹配过程中，不可避免地会遇到误匹配的情况。如果我们把错误匹配输入到 PnP 或 ICP 中，会发生怎样的情况？你能想到哪些避免误匹配的方法？</p>
+<p>9、使用 Sophus 的 SE3 类，自己设计 g2o 的节点与边，实现 PnP 和 ICP 的优化。</p>
+<p>10、在 Ceres 中实现 PnP 和 ICP 的优化。</p>
+<h2 id="_23">其他<a class="headerlink" href="#_23" title="Permanent link">¶</a></h2>
+<p>1、<span class="arithmatex">\(D_{xx}\)</span> 是什么？为什么能近似高斯二阶偏导数？</p>
+<h4 id="1-d_xx">1. <span class="arithmatex">\(D_{xx}\)</span> 是什么？<a class="headerlink" href="#1-d_xx" title="Permanent link">¶</a></h4>
+<p>在数学定义上，<span class="arithmatex">\(D_{xx}\)</span> 是图像 <span class="arithmatex">\(I\)</span> 与一个 <strong>盒状滤波器（Box Filter）</strong> 进行卷积的结果。</p>
+<p>为了理解它，我们需要看它原本要替代的东西——<strong>高斯二阶偏导数</strong> <span class="arithmatex">\(\frac{\partial^2 G}{\partial x^2}\)</span>。</p>
+<ul>
+<li>
+<p>原本的样子（高斯二阶导）：</p>
+<p>如果你对一个二维高斯函数 <span class="arithmatex">\(G(x, y, \sigma)\)</span> 在 <span class="arithmatex">\(x\)</span> 方向求两次导数，得到的图像是一个中间是负值（波谷）、两边是正值（波峰）的连续波浪形状（类似于“墨西哥帽”的一个切面）。</p>
+</li>
+<li>
+<p><span class="arithmatex">\(D_{xx}\)</span> 的样子（盒状滤波器）：</p>
+<p>SURF 将这个平滑的波浪“离散化”和“方块化”了。</p>
+</li>
+<li>
+<p>它把平滑的波峰变成了白色的矩形区域（值为 +1）。</p>
+</li>
+<li>它把平滑的波谷变成了黑色的矩形区域（值为 -2 或 -3，取决于归一化）。</li>
+<li>其余区域为 0（灰色）。</li>
+</ul>
+<p><strong>直观图示：</strong></p>
+<p>在 <span class="arithmatex">\(9 \times 9\)</span> 的尺度下，<span class="arithmatex">\(D_{xx}\)</span> 对应的模板大致如下（简化版）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[ 0  0  0  0  0  0  0  0  0 ]
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>[ 0  0  0  0  0  0  0  0  0 ]
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>[ 0  0 +1 +1 -2 +1 +1  0  0 ]  &lt;-- 这一行体现了从正到负再到正的变化
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>[ 0  0 +1 +1 -2 +1 +1  0  0 ]      (模拟二阶导数的“凸凹”特性)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[ 0  0 +1 +1 -2 +1 +1  0  0 ]
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>...
+</code></pre></div>
+<p><span class="arithmatex">\(D_{xx}\)</span> 就是图像 <span class="arithmatex">\(I\)</span> 与这个方块模板卷积后的值。</p>
+<h4 id="2">2. 为什么要近似？<a class="headerlink" href="#2" title="Permanent link">¶</a></h4>
+<p>这是 SURF (Speeded Up) 的核心所在。</p>
+<ul>
+<li><strong>高斯卷积</strong>：计算量大，随滤波器尺寸增大，计算量呈平方级增长 (<span class="arithmatex">\(O(N^2)\)</span>)。</li>
+<li><strong>盒状滤波器</strong>：配合 <strong>积分图 (Integral Image)</strong>，计算任意大小矩形区域的像素和只需要 4 次加减法 (<span class="arithmatex">\(O(1)\)</span>)。</li>
+<li>这意味着，计算 <span class="arithmatex">\(9 \times 9\)</span> 的 <span class="arithmatex">\(D_{xx}\)</span> 和计算 <span class="arithmatex">\(99 \times 99\)</span> 的 <span class="arithmatex">\(D_{xx}\)</span>，耗时是完全一样的！</li>
+</ul>
+<h4 id="3">3. 为什么 <strong>可以</strong> 近似？<a class="headerlink" href="#3" title="Permanent link">¶</a></h4>
+<p>虽然方块不是平滑曲线，但在信号处理中：</p>
+<ul>
+<li>
+<p><strong>主要频率响应相似</strong>：盒状滤波器捕获的图像频率特征（亮-暗-亮的变化模式）与高斯二阶导数是非常接近的。</p>
+</li>
+<li>
+<p><strong>尺度空间理论</strong>：特征检测主要关注的是“在这个尺度下是否存在这种变化模式”，而不是“这个变化的曲线是否完美符合高斯分布”。只要滤波器的正负区域分布与高斯二阶导的 <strong>Lobes（波瓣）</strong> 位置重合，响应值就能反映出相同的图像结构（如斑点）。</p>
+</li>
+<li>
+<p>加权修正：由于方块近似引入了误差（主要是矩形带来的高频噪声和能量差异），SURF 在计算最终行列式时引入了一个权重系数 <span class="arithmatex">\(w\)</span>（通常约为 0.9）来进行补偿：</p>
+</li>
+</ul>
+<div class="arithmatex">\[
+Det \approx D_{xx}D_{yy} - (w \cdot D_{xy})^2
+\]</div>
+<p>2、为什么 Hessian 矩阵的行列式可以用来检测极值点？（斑点检测）</p>
+<h4 id="1-hessian">1. Hessian 矩阵的几何意义<a class="headerlink" href="#1-hessian" title="Permanent link">¶</a></h4>
+<p>对于图像中的一点 <span class="arithmatex">\((x, y)\)</span>，其像素亮度 <span class="arithmatex">\(I(x, y)\)</span> 可以看作一个二维曲面（像地形图，亮是山峰，暗是盆地）。</p>
+<p>Hessian 矩阵由二阶导数组成，它描述了曲面在某一点的局部曲率（弯曲程度）。</p>
+<div class="arithmatex">\[
+H = \begin{bmatrix} L_{xx} &amp; L_{xy} \\ L_{xy} &amp; L_{yy} \end{bmatrix}
+\]</div>
+<ul>
+<li><span class="arithmatex">\(L_{xx}\)</span>：在 X 方向的弯曲程度（加速度）。</li>
+<li><span class="arithmatex">\(L_{yy}\)</span>：在 Y 方向的弯曲程度。</li>
+<li><span class="arithmatex">\(L_{xy}\)</span>：混合方向的变化。</li>
+</ul>
+<h4 id="2-lambda">2. 利用特征值 (<span class="arithmatex">\(\lambda\)</span>) 分析形状<a class="headerlink" href="#2-lambda" title="Permanent link">¶</a></h4>
+<p>线性代数告诉我们，矩阵的行列式等于其特征值的乘积：</p>
+<div class="arithmatex">\[Det(H) = \lambda_1 \cdot \lambda_2\]</div>
+<p>特征值 <span class="arithmatex">\(\lambda_1\)</span> 和 <span class="arithmatex">\(\lambda_2\)</span> 代表了曲面在两个主曲率方向上的弯曲程度。我们可以根据它们的符号和大小来分类图像结构：</p>
+<ol>
+<li><strong>平坦区域 (Flat)</strong>：<ul>
+<li><span class="arithmatex">\(\lambda_1 \approx 0, \lambda_2 \approx 0\)</span></li>
+<li>各个方向都没什么变化。</li>
+<li><strong><span class="arithmatex">\(Det(H) \approx 0\)</span></strong>。</li>
+</ul>
+</li>
+<li><strong>边缘 (Edge)</strong>：<ul>
+<li>例如，一个垂直边缘。在跨越边缘的方向（X 轴）变化剧烈（<span class="arithmatex">\(\lambda_1\)</span> 很大），但沿着边缘的方向（Y 轴）没有变化（<span class="arithmatex">\(\lambda_2 \approx 0\)</span>）。</li>
+<li><strong><span class="arithmatex">\(Det(H) = \lambda_1 \cdot \lambda_2 \approx 0\)</span></strong>（因为其中一个接近 0）。</li>
+</ul>
+</li>
+<li><strong>鞍点 (Saddle)</strong>：<ul>
+<li>一个方向向上弯（<span class="arithmatex">\(\lambda_1 &gt; 0\)</span>），一个方向向下弯（<span class="arithmatex">\(\lambda_2 &lt; 0\)</span>）。</li>
+<li><strong><span class="arithmatex">\(Det(H) &lt; 0\)</span></strong>（正负相乘）。</li>
+</ul>
+</li>
+<li><strong>斑点/极值点 (Blob / Corner)</strong> —— <strong>这是 SURF 想要的！</strong><ul>
+<li>在两个方向上都剧烈弯曲，且方向一致（要么都是山峰，要么都是盆地）。</li>
+<li><span class="arithmatex">\(\lambda_1\)</span> 很大，<span class="arithmatex">\(\lambda_2\)</span> 很大，且同号。</li>
+<li><strong><span class="arithmatex">\(Det(H) = \lambda_1 \cdot \lambda_2 \gg 0\)</span></strong>（乘积是一个很大的正数）。</li>
+</ul>
+</li>
+</ol>
+<h4 id="3_1">3. 结论<a class="headerlink" href="#3_1" title="Permanent link">¶</a></h4>
+<p>SURF (以及 SIFT 的 DoG) 寻找的是 <strong>斑点 (Blobs)</strong>。</p>
+<ul>
+<li>斑点中心是亮度变化的极值点，就像一个个小山包或小坑。</li>
+<li>只有当 <span class="arithmatex">\(D_{xx}\)</span> 和 <span class="arithmatex">\(D_{yy}\)</span> 都很大且同号（意味着 X 和 Y 方向都在剧烈变化），同时 <span class="arithmatex">\(D_{xy}\)</span> 相对较小（意味着没有强烈的对角线扭曲）时，<span class="arithmatex">\(Det(H)\)</span> 才会达到局部最大值。</li>
+</ul>
+<p><strong>因此，搜索 Hessian 矩阵行列式的局部最大值，就是在寻找图像中那些“在那一点周围，无论向哪个方向走，亮度都发生剧烈变化”的区域，即稳定的特征点。</strong></p>
+<h3 id="_24">总结图示<a class="headerlink" href="#_24" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>图像结构</strong></th>
+<th><strong>特征值情况</strong></th>
+<th><strong>行列式 Det(H)= λ1λ2</strong></th>
+<th><strong>结果</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>平坦</strong></td>
+<td><span class="arithmatex">\(\lambda_1 \approx 0, \lambda_2 \approx 0\)</span></td>
+<td>接近 0</td>
+<td>忽略</td>
+</tr>
+<tr>
+<td><strong>边缘</strong></td>
+<td><span class="arithmatex">\(\lambda_1 \gg 0, \lambda_2 \approx 0\)</span></td>
+<td>接近 0</td>
+<td>忽略</td>
+</tr>
+<tr>
+<td><strong>斑点 (特征点)</strong></td>
+<td><strong><span class="arithmatex">\(\lambda_1 \gg 0, \lambda_2 \gg 0\)</span></strong></td>
+<td><strong>很大的正值</strong></td>
+<td><strong>保留</strong></td>
+</tr>
+</tbody>
+</table>
+<p>这也就是为什么 SURF 和 SIFT 被称为“斑点检测器（Blob Detectors）”，而 Harris 角点检测器（使用 <span class="arithmatex">\(Det - k \cdot Trace^2\)</span>）虽然原理相似，但更侧重于角点。</p>
+<p>参考：</p>
+<p><a href="https://lsxiang.github.io/Journey2SLAM/computer_vision/SIFT/">https://lsxiang.github.io/Journey2SLAM/computer_vision/SIFT/</a></p>
+<p><a href="https://gemini.google.com/u/2/app/e8934bdf806caf9a?pageId">https://gemini.google.com/u/2/app/e8934bdf806caf9a?pageId</a> = none</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="最后更新">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="创建日期">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+                
+
+  
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2025 Gongzihang6
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["toc.follow", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

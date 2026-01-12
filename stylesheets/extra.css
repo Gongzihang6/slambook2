@@ -1,0 +1,257 @@
+/* ==========================================================================
+   1. 字体引入
+   ========================================================================== */
+@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --md-code-font: "JetBrains Mono", Consolas, Menlo, Monaco, monospace;
+}
+
+body, .md-typeset {
+    font-family: "LXGW WenKai Screen", sans-serif !important;
+}
+
+/* 强制代码块使用等宽字体 */
+code, kbd, pre {
+    font-family: var(--md-code-font) !important;
+}
+
+/* ==========================================================================
+   2. 基础排版修复
+   ========================================================================== */
+.md-typeset p { text-indent: 2em; }
+.md-typeset li p, .md-typeset blockquote p, .md-typeset td p { text-indent: 0 !important; }
+footer.md-footer { background-color: #ffffff !important; color: #333333 !important; }
+.md-footer__meta { background-color: #f9f9f9 !important; color: #555555 !important; border-top: 1px solid #e0e0e0; }
+.md-footer__inner { background-color: #ffffff !important; }
+.md-footer__meta a, .md-footer__inner a { color: #009485 !important; font-weight: bold; }
+.md-footer-copyright__highlight { display: none !important; }
+
+/* ==========================================================================
+   3. 代码块完美对齐修复 (重点修改区域)
+   ========================================================================== */
+
+/* --- 容器卡片化 --- */
+.md-typeset .codehilitetable {
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    display: block;
+    overflow-x: auto;
+    margin-bottom: 1em;
+    /* 消除表格自带的间距干扰 */
+    border-spacing: 0; 
+    border-collapse: collapse;
+}
+
+/* --- 关键：强制行号和代码的对齐基准 --- */
+.md-typeset table.codehilitetable tr td {
+    /* 1. 强制顶部对齐，防止因内容高度不同导致的垂直错位 */
+    vertical-align: top !important; 
+    /* 2. 统一上下内边距，这里决定了第一行代码距离边框的距离 */
+    padding-top: 12px !important;    
+    padding-bottom: 12px !important; 
+    /* 3. 清除边框 */
+    border: none !important;
+    /* 4. 强制行高继承，确保 td 高度一致 */
+    line-height: 1.6 !important;
+}
+
+/* --- 针对内部 pre/code/span 的暴力重置 --- */
+/* 这是之前对不齐的罪魁祸首：内部元素可能有默认的 margin/padding */
+.md-typeset table.codehilitetable tr td.linenos pre,
+.md-typeset table.codehilitetable tr td.code pre,
+.md-typeset table.codehilitetable tr td.code pre code,
+.md-typeset table.codehilitetable tr td.code span {
+    font-family: var(--md-code-font) !important;
+    font-size: 0.96em !important;
+    line-height: 1.6 !important; /* 必须与 td 保持一致 */
+    font-weight: 500 !important;
+    
+    /* 核心修复：清除所有内部间距，只依赖 td 的 padding */
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: baseline !important; /* 强制基线对齐 */
+    display: inline-block !important; /* 防止 span 导致的高度坍塌 */
+    width: 100% !important;  /* 撑满容器 */
+}
+
+/* --- 行号列细节 --- */
+.md-typeset table.codehilitetable tr td.linenos {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    border-right: 2px solid #eee !important;
+    background-color: transparent !important;
+    width: auto !important; /* 宽度自适应 */
+    min-width: 30px; /* 防止行号太窄 */
+    text-align: right;
+}
+
+.md-typeset table.codehilitetable tr td.linenos pre {
+    color: #b0bec5;
+}
+
+/* --- 代码列细节 --- */
+.md-typeset table.codehilitetable tr td.code {
+    padding-left: 16px !important;
+    width: 100%;
+}
+
+/* --- 兜底：无行号的普通代码块 --- */
+.md-typeset pre > code {
+    font-family: var(--md-code-font) !important;
+    font-size: 0.96em;
+    font-weight: 500;
+    line-height: 1.6;
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    color: #24292e;
+}
+
+/* 修复表格内的代码块样式冲突 */
+.md-typeset table.codehilitetable pre > code {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    white-space: pre; /* 保持换行 */
+}
+
+/* ==========================================================================
+   4. 语法高亮配色
+   ========================================================================== */
+.md-typeset .k, .md-typeset .kd, .md-typeset .kp, .md-typeset .kr, .md-typeset .kt { color: #d73a49; font-weight: bold; }
+.md-typeset .nf, .md-typeset .nc { color: #6f42c1; font-weight: 600; }
+.md-typeset .s, .md-typeset .s1, .md-typeset .s2 { color: #22863a; }
+.md-typeset .c, .md-typeset .c1, .md-typeset .cs, .md-typeset .cm { color: #6a737d; font-style: italic; }
+.md-typeset .m, .md-typeset .mi { color: #005cc5; }
+.md-typeset .cp { color: #005cc5; font-weight: bold; }
+
+/* 修改文档宽度占比 */
+.md-main__inner.md-grid {
+    max-width: 85% !important;
+}
+
+/* ==========================================================================
+   5. 主题颜色选择器样式
+   ========================================================================== */
+/* 提示语样式 */
+.theme-switcher-title {
+    font-size: 0.9em;       /* 字体稍微小一点，显得精致 */
+    font-weight: bold;      /* 加粗 */
+    color: var(--md-default-fg-color--light); /* 使用主题自带的淡色变量，自动适配深色模式 */
+    margin-bottom: 8px;     /* 和下面的按钮拉开一点距离 */
+    display: flex;          /* 布局设置 */
+    align-items: center;    /* 文字垂直居中 */
+    gap: 8px;               /* 图标和文字的间距 */
+}
+
+
+/* 颜色选择器容器 */
+.color-picker-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* 按钮之间的间距 */
+    margin: 1em 0;
+}
+
+/* 按钮样式 */
+.color-btn {
+    border: none;
+    color: white; /* 文字颜色 */
+    padding: 4px 12px;
+    border-radius: 4px; /* 圆角 */
+    font-size: 0.85em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    outline: none;
+}
+
+/* 鼠标悬停效果 */
+.color-btn:hover {
+    transform: scale(1.1); /* 放大一点点 */
+    opacity: 0.9;
+}
+
+/* 适配：白色背景的颜色文字需要变黑（比如 white 主题） */
+.color-btn[data-color="white"] {
+    background-color: #ffffff !important;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+
+/* 修改 MkDocs 正文中的高亮样式 */
+.md-typeset mark {
+    /* 1. 背景色：使用 RGBA 设置一个淡淡的黄色 (最后一位 0.3 是透明度，越小越淡) */
+    background-color: rgba(255, 215, 0, 0.3); 
+    
+    /* 2. 字体颜色：设置为深赭色/深灰色，比纯黑柔和 */
+    color: #b76e00; 
+    
+    /* 3. 加粗字体 */
+    font-weight: bold;
+
+    /* 4. (可选) 增加一点左右内边距，让高亮色块宽一点点，不那么紧促 */
+    padding: 0 4px;
+    
+    /* 5. (可选) 给背景加一点圆角，看起来更润 */
+    border-radius: 4px;
+}
+
+/* 适配深色模式 (Dark Mode) - 这一点很重要！ */
+/* 如果用户切换到深色模式，上面的浅色背景会很刺眼，需要单独设置 */
+[data-md-color-scheme="slate"] .md-typeset mark {
+    /* 深色模式下，背景要暗一些，文字要亮一些 */
+    background-color: rgba(255, 200, 0, 0.15); 
+    color: #ffd54f; 
+}
+
+
+/* ==========================================================================
+   6. 列表排版修复 (仿 Typora 紧凑风格)
+   ========================================================================== */
+
+/* 1. 全局收紧列表的左边距 */
+.md-typeset ul, 
+.md-typeset ol {
+    /* Material 主题默认缩进很大 (约 2.5em)，这里强制改为 1.5em，让列表更紧凑 */
+    padding-left: 1.5em !important; 
+    
+    /* 消除多余的外边距，防止整体向右偏移 */
+    margin-left: 0 !important;
+}
+
+/* 2. 针对嵌套列表进一步微调 */
+.md-typeset ul ul, 
+.md-typeset ul ol, 
+.md-typeset ol ul, 
+.md-typeset ol ol {
+    /* 确保嵌套层级也保持紧凑 */
+    padding-left: 1.5em !important; 
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* 3. 强制消除列表项内部的“首行缩进” */
+/* 你的第2部分配置了 p {text-indent: 2em}，这会导致列表里的文字也被向右推，造成“缩进很大”的错觉 */
+.md-typeset li,
+.md-typeset li p {
+    text-indent: 0 !important; /* 强制归零 */
+    
+    /* 稍微调整行间距，让列表项之间不那么挤，但也不像默认那么散 */
+    margin-top: 0.25em !important;
+    margin-bottom: 0.25em !important;
+}
+
+/* 4. 微调列表标记 (Bullet) 与文字的距离 */
+.md-typeset li {
+    /* 稍微拉近一点点文字和圆点的距离 */
+    padding-left: 0.1em; 
+}

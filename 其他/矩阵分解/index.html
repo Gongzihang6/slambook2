@@ -1,0 +1,2663 @@
+<!DOCTYPE html><html lang="zh" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Gongzihang6">
+      
+      
+        <link rel="canonical" href="https://Gongzihang6.github.io/slambook2/%E5%85%B6%E4%BB%96/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/">
+      
+      
+        <link rel="prev" href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch07-%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/">
+      
+      
+        <link rel="next" href="../%E7%9F%A9%E9%98%B5%E7%9B%B8%E4%BC%BC%E5%8F%98%E6%8D%A2%E7%9A%84%E6%84%8F%E4%B9%89/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>矩阵分解 - 视觉SLAM十四讲学习笔记</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-header__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            视觉SLAM十四讲学习笔记
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              矩阵分解
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="purple" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="lime" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-tabs__link">
+          
+  
+  
+  学习笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../practice/env.md" class="md-tabs__link">
+          
+  
+  
+  代码实践
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-tabs__link">
+          
+  
+  
+  课后习题
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="视觉SLAM十四讲学习笔记" class="md-nav__button md-logo" aria-label="视觉SLAM十四讲学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    视觉SLAM十四讲学习笔记
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Gongzihang6/slambook2" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    Gongzihang6/slambook2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习笔记
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习笔记
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第2讲-初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第2讲-初识SLAM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch2%E5%88%9D%E5%A7%8Bslam/%E5%88%9D%E8%AF%86SLAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初识SLAM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第4讲-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第4讲-李群与李代数
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch4%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第7讲-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第7讲-视觉里程计1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    视觉里程计 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/ICP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D-3D：ICP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch7%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/%E7%82%B9%E4%BA%91%E5%85%B3%E9%94%AE%E7%82%B9%E4%B8%8E%E7%89%B9%E5%BE%81%E6%8F%8F%E8%BF%B0%E5%AD%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D 点云关键点
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4">
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第9讲-后端1
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第9讲-后端1
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch9%E5%90%8E%E7%AB%AF1/%E6%A6%82%E8%BF%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_5">
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第10讲-后端2
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第10讲-后端2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch10%E5%90%8E%E7%AB%AF2/%E4%BD%8D%E5%A7%BF%E5%9B%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    位姿图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6">
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第13讲-实践SLAM系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第13讲-实践SLAM系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/C%2B%2B%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++智能指针
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ch13%E5%AE%9E%E8%B7%B5SLAM%E7%B3%BB%E7%BB%9F/cvcalcOpticalFlowPyrLK%E5%87%BD%E6%95%B0%E8%AF%A6%E8%A7%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cv::calcOpticalFlowPyrLK 函数详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    代码实践
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    代码实践
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../practice/env.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行环境配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4">
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课后习题
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课后习题
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch03-%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E5%88%9A%E4%BD%93%E8%BF%90%E5%8A%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch03-三维空间刚体运动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch04-%E6%9D%8E%E7%BE%A4%E4%B8%8E%E6%9D%8E%E4%BB%A3%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch04-李群与李代数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch05-%E7%9B%B8%E6%9C%BA%E4%B8%8E%E5%9B%BE%E5%83%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch05-相机与图像
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch06-%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%BC%98%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch06-非线性优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98/ch07-%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ch07-视觉里程计1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    其他
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵分解
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵分解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LU 分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LU 分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、什么是 LU 分解？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、LU 分解的条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3、计算流程与原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3、计算流程与原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高斯消元
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        合并高斯消元过程中的矩阵变换
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        奇异值分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="奇异值分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#svd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVD 的应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SVD 的应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#svd_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：SVD 的三大核心数学功能
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：具体应用场景分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：具体应用场景分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 计算机视觉与机器人 (你的核心领域)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 数据科学与机器学习
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 信号与图像处理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-nlp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 自然语言处理 (NLP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：计算流程与代码实现的现实考量
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-svd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 什么是奇异值分解 (SVD)？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、计算流程与原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2、计算流程与原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sign-ambiguity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原因一：符号的一致性 (Sign Ambiguity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原因二：计算简便
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR 分解
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        满秩分解
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%9F%A9%E9%98%B5%E7%9B%B8%E4%BC%BC%E5%8F%98%E6%8D%A2%E7%9A%84%E6%84%8F%E4%B9%89/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    矩阵相似变换的意义
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LU 分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LU 分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、什么是 LU 分解？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2lu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、LU 分解的条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3、计算流程与原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3、计算流程与原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高斯消元
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        合并高斯消元过程中的矩阵变换
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        奇异值分解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="奇异值分解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#svd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVD 的应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SVD 的应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#svd_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：SVD 的三大核心数学功能
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：具体应用场景分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：具体应用场景分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 计算机视觉与机器人 (你的核心领域)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 数据科学与机器学习
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 信号与图像处理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-nlp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 自然语言处理 (NLP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：计算流程与代码实现的现实考量
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-svd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 什么是奇异值分解 (SVD)？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、计算流程与原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2、计算流程与原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sign-ambiguity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原因一：符号的一致性 (Sign Ambiguity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原因二：计算简便
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR 分解
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        满秩分解
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="_1">矩阵分解<a class="headerlink" href="#_1" title="Permanent link">¶</a></h1>
+<h2 id="lu">LU 分解<a class="headerlink" href="#lu" title="Permanent link">¶</a></h2>
+<p><strong>LU 分解（LU Decomposition）</strong>，又称为 <strong>三角分解</strong>，是矩阵分析和数值计算中将一个矩阵分解为一个下三角矩阵（Lower triangular matrix）和一个上三角矩阵（Upper triangular matrix）乘积的方法。LU 分解是计算机进行科学计算的基石之一，主要应用包括：</p>
+<ul>
+<li>最核心的应用是求解线性方程组 <span class="arithmatex">\(Ax=b\)</span>，因为直接求解 <span class="arithmatex">\(Ax=b\)</span> 需要对矩阵 <span class="arithmatex">\(A\)</span> 求逆，计算量大且不稳定，通过 LU 分解，我们可以将问题转化为两个简单的三角方程组求解。将 <span class="arithmatex">\(A\)</span> 分解，得到 <span class="arithmatex">\(A=LU\)</span>，其中 <span class="arithmatex">\(L\)</span> 是下三角矩阵，<span class="arithmatex">\(U\)</span> 是上三角矩阵，<span class="arithmatex">\(Ax=b\)</span> 就变成 <span class="arithmatex">\(LUx=b\)</span>，因为 <span class="arithmatex">\(L\)</span> 是下三角矩阵，所以可以从第一行开始，逐行往下，轻松解出 <span class="arithmatex">\(Ux\)</span>，假设 <span class="arithmatex">\(Ux\)</span> 解出来等于 <span class="arithmatex">\(y\)</span>，<span class="arithmatex">\(Ux=y\)</span>，然后根据 <span class="arithmatex">\(U\)</span> 是上三角矩阵，所以可以从最后一行开始，逐行往上，轻松解出 <span class="arithmatex">\(x\)</span>，这样就将一个复杂的线性方程组求解转化为了两次简单的线性方程组求解；</li>
+<li>计算矩阵的行列式，这是因为三角矩阵的行列式等于对角线元素的乘积，所以 <span class="arithmatex">\(\det(A) = \det(L) \cdot \det(U) = 1 \cdot (\prod u_{ii}) = \prod_{i=1}^n u_{ii}\)</span>，这是计算机计算大矩阵行列式的标准方法。（为了分解的唯一性，我们通常会限制 L 或者 U 中的某一个对角线元素全是 1）</li>
+<li>计算矩阵的逆(<span class="arithmatex">\(A^{-1}\)</span>)，通过求解 <span class="arithmatex">\(Ax_i=e_i\)</span>（其中 <span class="arithmatex">\(e_i\)</span> 是单位向量），利用 LU 分解，可以高效的一列一列的求出 <span class="arithmatex">\(A\)</span> 的逆矩阵；</li>
+</ul>
+<h3 id="1-lu">1、什么是 LU 分解？<a class="headerlink" href="#1-lu" title="Permanent link">¶</a></h3>
+<p>对于一个 <span class="arithmatex">\(n \times n\)</span> 的方阵 <span class="arithmatex">\(A\)</span>，如果存在一个下三角矩阵 <span class="arithmatex">\(L\)</span> 和一个上三角矩阵 <span class="arithmatex">\(U\)</span>，使得：</p>
+<div class="arithmatex">\[
+A = LU
+\]</div>
+<p>则称矩阵 <span class="arithmatex">\(A\)</span> 具有 <strong>LU 分解</strong>。</p>
+<p>通常为了分解的唯一性，我们会规定其中一个矩阵的对角线元素全为 1：</p>
+<ul>
+<li><strong>Doolittle 分解</strong>：规定 <span class="arithmatex">\(L\)</span> 的对角线元素均为 1（<span class="arithmatex">\(l_{ii}=1\)</span>）。</li>
+<li><strong>Crout 分解</strong>：规定 <span class="arithmatex">\(U\)</span> 的对角线元素均为 1（<span class="arithmatex">\(u_{ii}=1\)</span>）。</li>
+</ul>
+<p>最常见的是 <strong>Doolittle 分解</strong>，形式如下：</p>
+<div class="arithmatex">\[
+\begin{bmatrix} a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} \\ a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; a_{n2} &amp; \dots &amp; a_{nn} \end{bmatrix} = \begin{bmatrix} 1 &amp; 0 &amp; \dots &amp; 0 \\ l_{21} &amp; 1 &amp; \dots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ l_{n1} &amp; l_{n2} &amp; \dots &amp; 1 \end{bmatrix} \cdot \begin{bmatrix} u_{11} &amp; u_{12} &amp; \dots &amp; u_{1n} \\ 0 &amp; u_{22} &amp; \dots &amp; u_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \dots &amp; u_{nn} \end{bmatrix}
+\]</div>
+<h3 id="2lu">2、LU 分解的条件<a class="headerlink" href="#2lu" title="Permanent link">¶</a></h3>
+<p>不是所有的方阵 A 都能进行标准的 A = LU 分解。</p>
+<p>对于非奇异矩阵（可逆矩阵）A，其能够进行标准 LU 分解的充要条件是：矩阵 A 的所有顺序主子式都不为零，即对于 k = 1,2,\dots, n，都有：</p>
+<div class="arithmatex">\[
+det(A_k) \neq 0
+\]</div>
+<p>其中 A_k 是 A 的左上角的 k×k 的子矩阵。</p>
+<p>为什么会有这个限制？从后面 LU 分解的原理推导我们可以看出，本质上，LU 分解对应于高斯消元法（Gaussian Elimination）的过程，如果在消元过程中，主元（Pivot）位置出现了 0，消元就无法进行下去，或者需要交换行。如果必须交换行，那么标准的 <span class="arithmatex">\(A=LU\)</span> 就不存在了。</p>
+<p><mark>通用解决方案：PLU 分解</mark></p>
+<p>为了解决主元为 0 或数值不稳定的问题，我们引入 <strong>选主元（Pivoting）</strong> 技术。对于任意可逆矩阵 <span class="arithmatex">\(A\)</span>，总是存在一个置换矩阵 <span class="arithmatex">\(P\)</span>（Permutation Matrix），使得：</p>
+<div class="arithmatex">\[
+PA = LU
+\]</div>
+<p>这被称为 PLU 分解。这意味着我们先对 <span class="arithmatex">\(A\)</span> 的行进行交换（使其顺序主子式非零且数值稳定），然后再进行 LU 分解。这对于 <strong>任意可逆方阵</strong> 都是成立的。</p>
+<p>注意：对 A 进行行交换后，我们把对应的 b 也进行同样的行交换，即从 Ax = b 到 PAx = Pb，这样新的 PA 可以 LU 分解，x 依然可以快速解出来，结果一样；同样的，求 A 的逆本质也是求解线性方程组，对速度没有影响，但是对 A 进行行交换后，解出的 A^-的列顺序和原始的 A 不同，需要通过右乘 P 进行列交换，才能得到原始 A 的逆</p>
+<div class="arithmatex">\[
+PA = LU \rightarrow A^-P^-= U^-L^- \rightarrow A^- = U^-L^-P
+\]</div>
+<p>最后，对 A 进行行交换，可能会改变行列式的符号（取决于行交换的次数），但是绝对值不变。</p>
+<p>一个方阵的 LU 分解并不唯一。这是因为如果 <span class="arithmatex">\(\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}\)</span> 是 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的一个三角分解，令 <span class="arithmatex">\(\boldsymbol{D}\)</span> 是对角元素都不为零的对角矩阵，则 <span class="arithmatex">\(\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}=\boldsymbol{L} \boldsymbol{D} \boldsymbol{D}^{-1} \boldsymbol{U}=\hat{\boldsymbol{L}} \hat{\boldsymbol{U}}\)</span>。由于上 (下) 三角矩阵的乘积仍是上 (下) 三角矩阵，因此 <span class="arithmatex">\(\boldsymbol{L} \boldsymbol{D}=\hat{\boldsymbol{L}}, \boldsymbol{D}^{-1} \boldsymbol{U}=\hat{\boldsymbol{U}}\)</span> 也分别是下、上三角矩阵。从而 <span class="arithmatex">\(\hat{\boldsymbol{L}} \hat{\boldsymbol{U}}\)</span> 也是 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的一个三角分解。一般来说，矩阵的三角分解不是唯一的。但是尚有下面的定理。</p>
+<p><strong>定理 4.1</strong> 设 <span class="arithmatex">\(\boldsymbol{A}=(a_{i j})_{n \times n}\)</span> 是 <span class="arithmatex">\(n\)</span> 阶矩阵，则当且仅当 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的顺序主子式 <span class="arithmatex">\(\Delta_{k} \neq 0\)</span> <span class="arithmatex">\((k=1, 2, \cdots, n-1)\)</span> 时，<span class="arithmatex">\(\boldsymbol{A}\)</span> 可唯一地分解为</p>
+<div class="arithmatex">\[
+\boldsymbol{A}=\boldsymbol{L} \boldsymbol{D} \boldsymbol{U}
+\]</div>
+<p>其中 <span class="arithmatex">\(\boldsymbol{L}\)</span> 是单位下三角矩阵， 第 4 章 矩阵分解 131 <span class="arithmatex">\(\boldsymbol{U}\)</span> 是单位上三角矩阵，且 <span class="arithmatex">\(\boldsymbol{D}=\operatorname{diag}(d_{1}, d_{2}, \cdots, d_{n})\)</span> 其中 <span class="arithmatex">\(d_{k}=\frac{\Delta_{k}}{\Delta_{k-1}} \quad(k=1, 2, \cdots, n ; \Delta_{0}=1)\)</span>。</p>
+<h3 id="3">3、计算流程与原理<a class="headerlink" href="#3" title="Permanent link">¶</a></h3>
+<p>A = LU 分解的本质就是记录了对矩阵进行 A 高斯消元过程的矩阵形式。</p>
+<ul>
+<li><span class="arithmatex">\(U\)</span>：就是矩阵 <span class="arithmatex">\(A\)</span> 经过高斯消元后得到的 <strong>行阶梯形矩阵</strong>（上三角部分）</li>
+<li><span class="arithmatex">\(L\)</span>：记录了消元过程中使用的 <strong>乘数（Multipliers）</strong>，也就是将对角线下方元素化为 0 需要减去对角线元素值的多少倍。</li>
+</ul>
+<h4 id="_2">高斯消元<a class="headerlink" href="#_2" title="Permanent link">¶</a></h4>
+<p>设 <span class="arithmatex">\(\boldsymbol{A}^{(0)}=\boldsymbol{A}\)</span>，其元素 <span class="arithmatex">\(a_{ij}^{(0)}=a_{ij}(i,j=1,2,\cdots,n)\)</span>。记 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的 <span class="arithmatex">\(k\)</span> 阶顺序主子式为 <span class="arithmatex">\(\Delta_k\)</span> <span class="arithmatex">\((k=1,2,\cdots,n)\)</span>。如果 <span class="arithmatex">\(\Delta_1=a_{11}^{(0)}\neq 0\)</span>，令 <span class="arithmatex">\(c_{i1}=\frac{a_{i1}^{(0)}}{a_{11}^{(0)}}\)</span> <span class="arithmatex">\((i=2,3,\cdots,n)\)</span>，并构造 Frobenius 矩阵</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{1}=\begin{bmatrix}
+1 &amp; &amp; &amp; \\
+c_{21} &amp; 1 &amp; &amp; \\
+\vdots &amp; &amp; \ddots &amp; \\
+c_{n 1} &amp; &amp; &amp; 1
+\end{bmatrix}, \quad \boldsymbol{L}_{1}^{-1}=\begin{bmatrix}
+1 &amp; &amp; &amp; \\
+-c_{21} &amp; 1 &amp; &amp; \\
+\vdots &amp; &amp; \ddots &amp; \\
+-c_{n 1} &amp; &amp; &amp; 1
+\end{bmatrix}
+\]</div>
+<p>计算</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{1}^{-1} \boldsymbol{A}^{(0)}=\begin{bmatrix}
+a_{11}^{(0)} &amp; a_{12}^{(0)} &amp; \cdots &amp; a_{1 n}^{(0)} \\
+&amp; a_{22}^{(1)} &amp; \cdots &amp; a_{2 n}^{(1)} \\
+&amp; \vdots &amp; &amp; \vdots \\
+&amp; a_{n 2}^{(1)} &amp; \cdots &amp; a_{n n}^{(1)}
+\end{bmatrix}=\boldsymbol{A}^{(1)}
+\]</div>
+<p>由此可见，<span class="arithmatex">\(\boldsymbol{A}^{(0)}=\boldsymbol{A}\)</span> 的第一列除主元 <span class="arithmatex">\(a_{11}^{(0)}\)</span> 外，其余元素全被化为零（高斯消元求解线性方程组的过程）。式 （7） 还可写为</p>
+<div class="arithmatex">\[
+\boldsymbol{A}^{(0)}=\boldsymbol{L}_{1} \boldsymbol{A}^{(1)}
+\]</div>
+<p>因为倍加初等变换不改变矩阵的行列式的值，所以由 <span class="arithmatex">\(\boldsymbol{A}^{(1)}\)</span> 得 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的二阶顺序主子式为</p>
+<div class="arithmatex">\[
+\Delta_{2}= a_{11}^{(0)} a_{22}^{(1)}
+\]</div>
+<p>如果 <span class="arithmatex">\(\Delta_{2} \neq 0\)</span>，则 <span class="arithmatex">\(a_{22}^{(1)} \neq 0\)</span>。令 <span class="arithmatex">\(c_{i 2}=\frac{a_{i 2}^{(1)}}{a_{22}^{(1)}}\)</span> <span class="arithmatex">\((i=3,4, \cdots, n)\)</span>，并构造 Frobenius 矩阵</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{2}=\begin{bmatrix}
+1 &amp; &amp; &amp; \\
+&amp; 1 &amp; &amp; \\
+&amp; c_{32} &amp; 1 &amp; \\
+&amp; \vdots &amp; &amp; \ddots &amp; \\
+&amp; c_{n 2} &amp; &amp; &amp; 1
+\end{bmatrix}, \quad \boldsymbol{L}_{2}^{-1}=\begin{bmatrix}
+1 &amp; &amp; &amp; \\
+&amp; 1 &amp; &amp; \\
+&amp; -c_{32} &amp; 1 &amp; \\
+&amp; \vdots &amp; &amp; \ddots &amp; \\
+&amp; -c_{n 2} &amp; &amp; &amp; 1
+\end{bmatrix}
+\]</div>
+<p>计算</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{2}^{-1} \boldsymbol{A}^{(1)}=\begin{bmatrix}
+a_{11}^{(0)} &amp; a_{12}^{(0)} &amp; a_{13}^{(0)} &amp; \cdots &amp; a_{1 n}^{(0)} \\
+&amp; a_{22}^{(1)} &amp; a_{23}^{(1)} &amp; \cdots &amp; a_{2 n}^{(1)} \\
+&amp; &amp; a_{33}^{(2)} &amp; \cdots &amp; a_{3 n}^{(2)} \\
+&amp; &amp; \vdots &amp; &amp; \vdots \\
+&amp; &amp; a_{n 3}^{(2)} &amp; \cdots &amp; a_{n n}^{(2)}
+\end{bmatrix}=\boldsymbol{A}^{(2)}
+\]</div>
+<p>由此可见，<span class="arithmatex">\(\boldsymbol{A}^{(2)}\)</span> 的前两列中主元以下的元素全为零。式 (11) 还可写为</p>
+<div class="arithmatex">\[
+\boldsymbol{A}^{(1)}=\boldsymbol{L}_{2} \boldsymbol{A}^{(2)}
+\]</div>
+<p>因为倍加初等变换不改变矩阵的行列式的值，所以由 <span class="arithmatex">\(\boldsymbol{A}^{(2)}\)</span> 得 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的三阶顺序主子式为</p>
+<div class="arithmatex">\[
+\Delta_{3}= a_{11}^{(0)} a_{22}^{(1)} a_{33}^{(2)}
+\]</div>
+<p>如此继续下去，直到第 <span class="arithmatex">\(r-1\)</span> 步，得到</p>
+<div class="arithmatex">\[
+\boldsymbol{A}^{(r-1)}=\begin{bmatrix}
+a_{11}^{(0)} &amp; \cdots &amp; a_{1, r-1}^{(0)} &amp; a_{1 r}^{(0)} &amp; \cdots &amp; a_{1 n}^{(0)} \\
+&amp; \ddots &amp; \vdots &amp; \vdots &amp; &amp; \vdots \\
+&amp; &amp; a_{r-1, r-1}^{(r-2)} &amp; a_{r-1, r}^{(r-2)} &amp; \cdots &amp; a_{r-1, n}^{(r-2)} \\
+&amp; &amp; &amp; a_{r r}^{(r-1)} &amp; \cdots &amp; a_{r n}^{(r-1)} \\
+&amp; &amp; &amp; \vdots &amp; &amp; \vdots \\
+&amp; &amp; &amp; a_{n r}^{(r-1)} &amp; \cdots &amp; a_{n n}^{(r-1)}
+\end{bmatrix}
+\]</div>
+<div class="arithmatex">\[
+\Delta_{r}= a_{11}^{(0)} a_{22}^{(1)} \cdots a_{r-1, r-1}^{(r-2)} a_{r r}^{(r-1)}
+\]</div>
+<p>如果 <span class="arithmatex">\(\Delta_{r} \neq 0\)</span>，则 <span class="arithmatex">\(a_{r r}^{(r-1)} \neq 0\)</span>。令 <span class="arithmatex">\(c_{i r}=\frac{a_{i r}^{(r-1)}}{a_{r r}^{(r-1)}}\)</span> <span class="arithmatex">\((i=r+1, r+2, \cdots, n)\)</span>，并构造 Frobenius 矩阵</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{r}=\begin{bmatrix}
+1 &amp; &amp; &amp; &amp; \\
+&amp; \ddots &amp; &amp; &amp; \\
+&amp; &amp; 1 &amp; &amp; \\
+&amp; &amp; c_{r+1, r} &amp; 1 &amp; \\
+&amp; &amp; \vdots &amp; &amp; \ddots &amp; \\
+&amp; &amp; c_{n r} &amp; &amp; &amp; 1
+\end{bmatrix}, \quad \boldsymbol{L}_{r}^{-1}=\begin{bmatrix}
+1 &amp; &amp; &amp; &amp; \\
+&amp; \ddots &amp; &amp; &amp; \\
+&amp; &amp; 1 &amp; &amp; \\
+&amp; &amp; -c_{r+1, r} &amp; 1 &amp; \\
+&amp; &amp; \vdots &amp; &amp; \ddots &amp; \\
+&amp; &amp; -c_{n r} &amp; &amp; &amp; 1
+\end{bmatrix}
+\]</div>
+<p>计算</p>
+<div class="arithmatex">\[
+\boldsymbol{L}_{r}^{-1} \boldsymbol{A}^{(r-1)}=\begin{bmatrix}
+a_{11}^{(0)} &amp; \cdots &amp; a_{1 r}^{(0)} &amp; a_{1, r+1}^{(0)} &amp; \cdots &amp; a_{1 n}^{(0)} \\
+&amp; \ddots &amp; \vdots &amp; \vdots &amp; &amp; \vdots \\
+&amp; &amp; a_{r r}^{(r-1)} &amp; a_{r, r+1}^{(r-1)} &amp; \cdots &amp; a_{r n}^{(r-1)} \\
+&amp; &amp; &amp; a_{r+1, r+1}^{(r)} &amp; \cdots &amp; a_{r+1, n}^{(r)} \\
+&amp; &amp; &amp; \vdots &amp; &amp; \vdots \\
+&amp; &amp; &amp; a_{n, r+1}^{(r)} &amp; \cdots &amp; a_{n n}^{(r)}
+\end{bmatrix}=\boldsymbol{A}^{(r)}
+\]</div>
+<p>易见，<span class="arithmatex">\(\boldsymbol{A}^{(r)}\)</span> 的前 <span class="arithmatex">\(r\)</span> 列中主元以下的元素全为零。式 (17) 还可写为</p>
+<div class="arithmatex">\[
+\boldsymbol{A}^{(r-1)}=\boldsymbol{L}_{r} \boldsymbol{A}^{(r)}
+\]</div>
+<p>且由 <span class="arithmatex">\(\boldsymbol{A}^{(r)}\)</span> 易得 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的 <span class="arithmatex">\(r+1\)</span> 阶顺序主子式为</p>
+<div class="arithmatex">\[
+\Delta_{r+1}= a_{11}^{(0)} a_{22}^{(1)} \cdots a_{r r}^{(r-1)} a_{r+1, r+1}^{(r)}
+\]</div>
+<p>如果可以一直进行下去，则在第 <span class="arithmatex">\(n-1\)</span> 步之后便有</p>
+<div class="arithmatex">\[
+\boldsymbol{A}^{(n-1)}=\begin{bmatrix}
+a_{11}^{(0)} &amp; a_{12}^{(0)} &amp; \cdots &amp; a_{1, n-1}^{(0)} &amp; a_{1 n}^{(0)} \\
+&amp; a_{22}^{(1)} &amp; \cdots &amp; a_{2, n-1}^{(1)} &amp; a_{2 n}^{(1)} \\
+&amp; &amp; \ddots &amp; \vdots &amp; \vdots \\
+&amp; &amp; &amp; a_{n-1, n-1}^{(n-2)} &amp; a_{n-1, n}^{(n-2)} \\
+&amp; &amp; &amp; &amp; a_{n n}^{(n-1)}
+\end{bmatrix}
+\]</div>
+<p>这种对 <span class="arithmatex">\(\boldsymbol{A}\)</span> 的元素进行的消元过程叫做 Gauss 消元过程。Gauss 消元过程能够进行到底的条件是当且仅当 <span class="arithmatex">\(a_{11}^{(0)}, a_{22}^{(1)}, \cdots, a_{n-1, n-1}^{(n-2)}\)</span> 都不为零，即</p>
+<div class="arithmatex">\[
+\Delta_{r} \neq 0 \quad(r = 1, 2, \cdots, n-1)
+\]</div>
+<p>由于 Gauss 顺序消元过程的特点是未用行、列的交换，因此附加条件式 (21) 是合理的。</p>
+<h4 id="_3">合并高斯消元过程中的矩阵变换<a class="headerlink" href="#_3" title="Permanent link">¶</a></h4>
+<p>当条件式 (21) 满足时，由式 (18) 有</p>
+<div class="arithmatex">\[
+\boldsymbol{A}=\boldsymbol{A}^{(0)}=\boldsymbol{L}_{1} \boldsymbol{A}^{(1)}=\boldsymbol{L}_{1} \boldsymbol{L}_{2} \boldsymbol{A}^{(2)}=\cdots =\boldsymbol{L}_{1} \boldsymbol{L}_{2} \cdots \boldsymbol{L}_{n-1} \boldsymbol{A}^{(n-1)}
+\]</div>
+<p>容易求出</p>
+<div class="arithmatex">\[
+\boldsymbol{L}=\boldsymbol{L}_{1} \boldsymbol{L}_{2} \cdots \boldsymbol{L}_{n-1}=\begin{bmatrix}
+1 &amp; &amp; &amp; &amp; \\
+c_{21} &amp; 1 &amp; &amp; &amp; \\
+\vdots &amp; \vdots &amp; \ddots &amp; &amp; \\
+c_{n-1, 1} &amp; c_{n-1, 2} &amp; \cdots &amp; 1 &amp; \\
+c_{n 1} &amp; c_{n 2} &amp; \cdots &amp; c_{n, n-1} &amp; 1
+\end{bmatrix}
+\]</div>
+<p>这是一个对角元素都是 <span class="arithmatex">\(1\)</span> 的下三角矩阵，称为单位下三角矩阵。若令 <span class="arithmatex">\(\boldsymbol{A}^{(n-1)}=\boldsymbol{U}\)</span> (或 <span class="arithmatex">\(\boldsymbol{R}\)</span>)，则得</p>
+<div class="arithmatex">\[
+\boldsymbol{A}=\boldsymbol{L} \boldsymbol{U}
+\]</div>
+<p>这样 <span class="arithmatex">\(\boldsymbol{A}\)</span> 就分解成一个单位下三角矩阵与一个上三角矩阵的乘积。</p>
+<h2 id="_4">奇异值分解<a class="headerlink" href="#_4" title="Permanent link">¶</a></h2>
+<h3 id="svd">SVD 的应用<a class="headerlink" href="#svd" title="Permanent link">¶</a></h3>
+<h4 id="svd_1">第一部分：SVD 的三大核心数学功能<a class="headerlink" href="#svd_1" title="Permanent link">¶</a></h4>
+<p>在讨论具体应用之前，我们需要明确 SVD 在数学上到底提供了什么工具：</p>
+<ol>
+<li><strong>低秩逼近 (Low-Rank Approximation)</strong><ul>
+<li><strong>原理</strong>：根据 Eckart-Young-Mirsky 定理，如果我们要找到一个秩为 <span class="arithmatex">\(k\)</span> 的矩阵 <span class="arithmatex">\(\hat{A}\)</span> 来逼近原矩阵 <span class="arithmatex">\(A\)</span>，使得误差（Frobenius 范数）最小，最佳选择就是保留前 <span class="arithmatex">\(k\)</span> 个最大的奇异值，其余置零。</li>
+<li><strong>本质</strong>：提取信号的主成分，丢弃被认为是“噪声”的小奇异值部分。</li>
+</ul>
+</li>
+<li><strong>求解最小二乘与伪逆 (Generalized Inverse)</strong><ul>
+<li><strong>原理</strong>：对于线性方程组 <span class="arithmatex">\(Ax=b\)</span>，当 <span class="arithmatex">\(A\)</span> 不可逆（奇异）或非方阵时，SVD 提供了求 <strong>摩尔-彭若斯伪逆 (Moore-Penrose Pseudoinverse)</strong> <span class="arithmatex">\(A^+\)</span> 的标准方法：<span class="arithmatex">\(A^+ = V \Sigma^+ U^T\)</span>。</li>
+<li><strong>本质</strong>：在解空间中寻找模长最小的最小二乘解。</li>
+</ul>
+</li>
+<li><strong>齐次线性方程组的解 (<span class="arithmatex">\(Ax=0\)</span>)</strong><ul>
+<li><strong>原理</strong>：在约束 <span class="arithmatex">\(\|x\|=1\)</span> 下求解 <span class="arithmatex">\(\min \|Ax\|^2\)</span>。</li>
+<li><strong>解法</strong>：解是 <span class="arithmatex">\(A\)</span> 对应于 <strong>最小奇异值</strong> 的右奇异向量（即 <span class="arithmatex">\(V\)</span> 的最后一列）。</li>
+<li><strong>本质</strong>：寻找矩阵零空间（Null Space）或最接近零空间的方向。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="_5">第二部分：具体应用场景分析<a class="headerlink" href="#_5" title="Permanent link">¶</a></h4>
+<h5 id="1">1. 计算机视觉与机器人 (你的核心领域)<a class="headerlink" href="#1" title="Permanent link">¶</a></h5>
+<p>这是你目前研究（猪体测量、点云处理）最相关的部分。</p>
+<ul>
+<li><strong>点云配准 (Rigid Point Cloud Registration)</strong></li>
+<li><strong>问题</strong>：已知两个对应的点集 <span class="arithmatex">\(P\)</span> 和 <span class="arithmatex">\(Q\)</span>，求旋转矩阵 <span class="arithmatex">\(R\)</span> 和平移 <span class="arithmatex">\(t\)</span> 使得 <span class="arithmatex">\(\sum \| R p_i + t - q_i \|^2\)</span> 最小。</li>
+<li><strong>SVD 应用</strong>：这是著名的 <strong>Orthogonal Procrustes Problem</strong>。
+        1. 去中心化。
+        2. 计算互协方差矩阵 <span class="arithmatex">\(H = \sum (p_i - \bar{p})(q_i - \bar{q})^T\)</span>。
+        3. 分解 <span class="arithmatex">\(H = U \Sigma V^T\)</span>。
+        4. <strong>解：<span class="arithmatex">\(R = V U^T\)</span></strong> (需处理行列式为 -1 的反射情况)。</li>
+<li><strong>地位</strong>：ICP 算法、SVD-based 姿态估计的核心步骤。</li>
+<li><strong>相机标定与多视图几何 (Direct Linear Transform, DLT)</strong></li>
+<li><strong>问题</strong>：求解基础矩阵 <span class="arithmatex">\(F\)</span>、单应性矩阵 <span class="arithmatex">\(H\)</span> 或投影矩阵 <span class="arithmatex">\(P\)</span>。</li>
+<li><strong>SVD 应用</strong>：这些问题最终都会转化为形如 <span class="arithmatex">\(Ax=0\)</span> 的齐次方程组。例如 8 点法求基础矩阵，就是构建一个 <span class="arithmatex">\(N \times 9\)</span> 的矩阵 <span class="arithmatex">\(A\)</span>，对其做 SVD，取 <strong>最小奇异值对应的右奇异向量</strong> 作为参数解。</li>
+<li><strong>手眼标定 (Hand-Eye Calibration)</strong></li>
+<li><strong>场景</strong>：机器人末端装相机，求解机械臂末端到相机的变换矩阵。这通常涉及求解 <span class="arithmatex">\(AX=XB\)</span> 形式的方程，SVD 是其解析解法的重要组成部分。</li>
+</ul>
+<h5 id="2">2. 数据科学与机器学习<a class="headerlink" href="#2" title="Permanent link">¶</a></h5>
+<ul>
+<li>
+<p><strong>主成分分析 (PCA) —— 降维</strong></p>
+</li>
+<li>
+<p><strong>联系</strong>：PCA 的本质就是对 <strong>中心化后的数据矩阵</strong> 进行 SVD。</p>
+</li>
+<li>
+<p>流程：数据矩阵 <span class="arithmatex">\(X\)</span> (<span class="arithmatex">\(n\)</span> 个样本，<span class="arithmatex">\(d\)</span> 个特征)。</p>
+</li>
+</ul>
+<p>​    <span class="arithmatex">\(X = U \Sigma V^T\)</span></p>
+<ul>
+<li>
+<p><strong>解释</strong>：</p>
+</li>
+<li>
+<p><span class="arithmatex">\(V\)</span> 的列（右奇异向量）就是 <strong>主成分方向</strong>（特征向量）。</p>
+</li>
+<li><span class="arithmatex">\(\Sigma\)</span> 的元素平方（<span class="arithmatex">\(\sigma_i^2\)</span>）对应 <strong>特征值的方差贡献</strong>。</li>
+<li>
+<p><span class="arithmatex">\(U \Sigma\)</span> 是数据在低维空间上的 <strong>投影坐标</strong>。</p>
+</li>
+<li>
+<p><strong>推荐系统 (Matrix Completion)</strong></p>
+</li>
+<li>
+<p><strong>问题</strong>：用户-商品评分矩阵是非常稀疏的，如何预测未评分项？</p>
+</li>
+<li><strong>SVD 应用</strong>：假设评分矩阵是 <strong>低秩</strong> 的（用户的喜好由少数几个潜在因子决定），利用 SVD 分解矩阵，只保留前 <span class="arithmatex">\(k\)</span> 个特征，重构矩阵 <span class="arithmatex">\(\hat{A} \approx U_k \Sigma_k V_k^T\)</span>，填充缺失值。</li>
+<li><strong>案例</strong>：Netflix Prize 竞赛中的经典算法（Latent Factor Model）。</li>
+</ul>
+<h5 id="3_1">3. 信号与图像处理<a class="headerlink" href="#3_1" title="Permanent link">¶</a></h5>
+<ul>
+<li><strong>图像压缩</strong></li>
+<li><strong>应用</strong>：将图像视为矩阵 <span class="arithmatex">\(A\)</span>，做 SVD：<span class="arithmatex">\(A = \sum_{i=1}^r \sigma_i u_i v_i^T\)</span>。</li>
+<li><strong>效果</strong>：只存储前 <span class="arithmatex">\(k\)</span> 个奇异值和对应的向量。通常 <span class="arithmatex">\(k \ll r\)</span> 就能还原图像的主要轮廓和信息，实现高压缩比。</li>
+<li><strong>图像去噪</strong></li>
+<li><strong>原理</strong>：图像中的噪声通常表现为高频、杂乱的信号，对应于 SVD 中 <strong>较小的奇异值</strong>。</li>
+<li><strong>操作</strong>：将小奇异值置零，重构图像，即可去除噪声（Truncated SVD）。</li>
+</ul>
+<h5 id="4-nlp">4. 自然语言处理 (NLP)<a class="headerlink" href="#4-nlp" title="Permanent link">¶</a></h5>
+<ul>
+<li><strong>潜在语义分析 (LSA / LSI)</strong></li>
+<li><strong>问题</strong>：分析文档和词汇的关系。</li>
+<li><strong>SVD 应用</strong>：构建“词-文档”矩阵（Term-Document Matrix）。对其进行 SVD 截断分解。</li>
+<li><strong>意义</strong>：<ul>
+<li><span class="arithmatex">\(U\)</span> 空间代表“词的语义空间”。</li>
+<li><span class="arithmatex">\(V\)</span> 空间代表“文档的语义空间”。</li>
+<li>利用低秩逼近，可以发现“汽车”和“车辆”在语义空间中距离很近，即使它们没有在同一篇文档中同时出现。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="_6">第三部分：计算流程与代码实现的现实考量<a class="headerlink" href="#_6" title="Permanent link">¶</a></h4>
+<p>虽然原理简单，但在工程实现（如 Python/C++）中，你需要注意以下几点：</p>
+<ol>
+<li>
+<p>计算复杂度：</p>
+<p>SVD 的标准算法复杂度约为 <span class="arithmatex">\(O(\min(mn^2, m^2n))\)</span>。对于超大规模矩阵（如 10 万 <span class="arithmatex">\(\times\)</span> 10 万），直接跑 numpy.linalg.svd 会非常慢。</p>
+<ul>
+<li><strong>解决方案</strong>：使用 <strong>Randomized SVD</strong>（随机 SVD）或 <strong>Iterative methods</strong> (如 Lanczos 算法，对应 <code>scipy.sparse.linalg.svds</code>)，只计算前 <span class="arithmatex">\(k\)</span> 个最大的奇异值。</li>
+</ul>
+</li>
+<li>
+<p>符号模糊性 (Sign Ambiguity)：</p>
+<p>SVD 算出的 <span class="arithmatex">\(u_i\)</span> 和 <span class="arithmatex">\(v_i\)</span> 可能会同时取反。在做时间序列分析或视频处理时，需要进行“符号矫正”以保证帧间的连续性。</p>
+</li>
+</ol>
+<h3 id="1-svd">1. 什么是奇异值分解 (SVD)？<a class="headerlink" href="#1-svd" title="Permanent link">¶</a></h3>
+<p>对于任意一个 <span class="arithmatex">\(m \times n\)</span> 的实矩阵 <span class="arithmatex">\(A\)</span>，都存在一种分解，将其写成三个矩阵的乘积：</p>
+<div class="arithmatex">\[
+A = U \Sigma V^T
+\]</div>
+<p>其中：</p>
+<ul>
+<li><strong><span class="arithmatex">\(U\)</span></strong>：是一个 <span class="arithmatex">\(m \times m\)</span> 的 <strong>正交矩阵</strong>（Orthogonal Matrix），<span class="arithmatex">\(U\)</span> 是 <span class="arithmatex">\(AA^T\)</span> 的特征向量矩阵，其列向量称为 <strong>左奇异向量</strong>。</li>
+<li>满足 <span class="arithmatex">\(U^T U = I_m\)</span>。</li>
+<li><strong><span class="arithmatex">\(\Sigma\)</span></strong>：是一个 <span class="arithmatex">\(m \times n\)</span> 的 <strong>对角矩阵</strong>（Diagonal Matrix），对角线上的元素 <span class="arithmatex">\(\sigma_i\)</span> 称为 <strong>奇异值</strong>，是 <span class="arithmatex">\(A^TA\)</span> 的特征值的平方根。</li>
+<li>通常规定 <span class="arithmatex">\(\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r &gt; 0\)</span>，其余为 0（<span class="arithmatex">\(r\)</span> 为矩阵的秩）。</li>
+<li><strong><span class="arithmatex">\(V^T\)</span></strong>：是一个 <span class="arithmatex">\(n \times n\)</span> 的 <strong>正交矩阵</strong> 的转置，其列向量（即 <span class="arithmatex">\(V\)</span> 的列向量）称为 <strong>右奇异向量</strong>，<span class="arithmatex">\(V\)</span> 是 <span class="arithmatex">\(A^TA\)</span> 的特征向量矩阵。</li>
+<li>满足 <span class="arithmatex">\(V^T V = I_n\)</span>。</li>
+</ul>
+<p>奇异值分解 SVD 的几何含义：线性变换 <span class="arithmatex">\(x \mapsto Ax\)</span> 可以分解为三个简单的几何动作：</p>
+<ol>
+<li><strong><span class="arithmatex">\(V^T\)</span> (旋转/反射)</strong>：<ul>
+<li><span class="arithmatex">\(V^T\)</span> 是正交阵，对向量 <span class="arithmatex">\(x\)</span> 进行 <strong>旋转</strong> 或 <strong>反射</strong>，不改变长度。这相当于在一个新的坐标系中表示向量。</li>
+</ul>
+</li>
+<li><strong><span class="arithmatex">\(\Sigma\)</span> (缩放)</strong>：<ul>
+<li>对坐标轴进行 <strong>伸缩变换</strong>。在第 <span class="arithmatex">\(i\)</span> 个方向上拉伸 <span class="arithmatex">\(\sigma_i\)</span> 倍。如果有 <span class="arithmatex">\(\sigma_i=0\)</span>，则在该维度上压缩为 0（降维）。</li>
+</ul>
+</li>
+<li><strong><span class="arithmatex">\(U\)</span> (旋转/反射)</strong>：<ul>
+<li>再进行一次 <strong>旋转</strong> 或 <strong>反射</strong>，将结果映射回 <span class="arithmatex">\(m\)</span> 维空间的目标方向。</li>
+</ul>
+</li>
+</ol>
+<p><strong>一句话总结</strong>：任意一个线性变换，都可以看作是“先旋转，再沿着坐标轴缩放，最后再旋转”。</p>
+<h3 id="2_1">2、计算流程与原理<a class="headerlink" href="#2_1" title="Permanent link">¶</a></h3>
+<p>SVD 的计算本质上是寻找矩阵 <span class="arithmatex">\(A^TA\)</span> 和 <span class="arithmatex">\(AA^T\)</span> 的特征值分解。核心是先假设 A 可以写成 <span class="arithmatex">\(A = U \Sigma V^T\)</span> 的形式，然后计算 <span class="arithmatex">\(A^TA\)</span> 和 <span class="arithmatex">\(AA^T\)</span> 发现 <span class="arithmatex">\(U、\Sigma、V\)</span> 都有特殊的含义。</p>
+<p>原理推导：假设 <span class="arithmatex">\(A = U \Sigma V^T\)</span>，利用转置性质：</p>
+<ol>
+<li>
+<p>计算 <span class="arithmatex">\(V\)</span> 和 <span class="arithmatex">\(\Sigma\)</span>：</p>
+<div class="arithmatex">\[
+A^T A = (U \Sigma V^T)^T (U \Sigma V^T) = V \Sigma^T U^T U \Sigma V^T
+\]</div>
+<p>因为 <span class="arithmatex">\(U\)</span> 是正交阵，<span class="arithmatex">\(U^T U = I\)</span>，且 <span class="arithmatex">\(\Sigma^T \Sigma = \Sigma^2\)</span>（对角阵平方即元素平方），所以：</p>
+<div class="arithmatex">\[
+A^T A = V \Sigma^2 V^T
+\]</div>
+<p>结论：<span class="arithmatex">\(A^T A\)</span> 是一个 <span class="arithmatex">\(n \times n\)</span> 的对称半正定矩阵。</p>
+<ul>
+<li><strong><span class="arithmatex">\(V\)</span></strong> 是 <span class="arithmatex">\(A^T A\)</span> 的特征向量矩阵。</li>
+<li><strong><span class="arithmatex">\(\sigma_i^2\)</span></strong> 是 <span class="arithmatex">\(A^T A\)</span> 的特征值（即 <span class="arithmatex">\(\sigma_i = \sqrt{\lambda_i}\)</span>）。</li>
+</ul>
+</li>
+<li>
+<p>计算 <span class="arithmatex">\(U\)</span>：</p>
+<p>同理，计算 <span class="arithmatex">\(A A^T\)</span>：</p>
+<div class="arithmatex">\[
+A A^T = U \Sigma V^T (V \Sigma^T U^T) = U \Sigma^2 U^T
+\]</div>
+<p>结论：<span class="arithmatex">\(U\)</span> 是 <span class="arithmatex">\(A A^T\)</span> 的特征向量矩阵。</p>
+</li>
+</ol>
+<p><strong>实际计算流程 (Step-by-Step)</strong>：</p>
+<ol>
+<li>
+<p><strong>构造</strong> <span class="arithmatex">\(S = A^T A\)</span>。</p>
+</li>
+<li>
+<p>求特征值和特征向量：计算 <span class="arithmatex">\(S\)</span> 的特征值 <span class="arithmatex">\(\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_n \ge 0\)</span> 和对应的单位特征向量 <span class="arithmatex">\(v_1, v_2, \dots, v_n\)</span>。这些 <span class="arithmatex">\(v_i\)</span> 构成了矩阵 <span class="arithmatex">\(V\)</span>。</p>
+</li>
+<li>
+<p>求奇异值：</p>
+<div class="arithmatex">\[
+\sigma_i = \sqrt{\lambda_i}, \quad i = 1, \dots, r
+\]</div>
+</li>
+<li>
+<p>求左奇异向量 <span class="arithmatex">\(U\)</span>：虽然可以求 <span class="arithmatex">\(AA^T\)</span> 的特征向量，但在数值计算中，通常直接利用 <span class="arithmatex">\(A v_i = \sigma_i u_i\)</span> 来求 <span class="arithmatex">\(u_i\)</span>，以保证数值符号的一致性：</p>
+<div class="arithmatex">\[
+u_i = \frac{1}{\sigma_i} A v_i, \quad i = 1, \dots, r
+\]</div>
+<p>对于 <span class="arithmatex">\(r &lt; i \le m\)</span> 的部分，通过扩充正交基（Gram-Schmidt）补全 <span class="arithmatex">\(U\)</span>。</p>
+</li>
+</ol>
+<p><em>“既然 <span class="arithmatex">\(U\)</span> 是 <span class="arithmatex">\(AA^T\)</span> 的特征向量矩阵，我为什么不直接解 <span class="arithmatex">\(AA^T\)</span> 的特征值问题来求 <span class="arithmatex">\(U\)</span>，而要用 <span class="arithmatex">\(A v_i = \sigma_i u_i\)</span> 这个公式？”</em></p>
+<h4 id="sign-ambiguity">原因一：符号的一致性 (Sign Ambiguity)<a class="headerlink" href="#sign-ambiguity" title="Permanent link">¶</a></h4>
+<p>如果你分别独立地计算：</p>
+<ol>
+<li>对 <span class="arithmatex">\(A^T A\)</span> 做特征分解得到 <span class="arithmatex">\(V\)</span>。</li>
+<li>对 <span class="arithmatex">\(A A^T\)</span> 做特征分解得到 <span class="arithmatex">\(U\)</span>。</li>
+</ol>
+<p>你会遇到一个问题：特征向量的方向是不确定的（<span class="arithmatex">\(v\)</span> 和 <span class="arithmatex">\(-v\)</span> 都是特征向量）。</p>
+<p>可能你算出的 <span class="arithmatex">\(v_1\)</span> 对应的是正方向，而独立算出的 <span class="arithmatex">\(u_1\)</span> 却对应了负方向。这样组合起来 <span class="arithmatex">\(U \Sigma V^T\)</span> 就会和原矩阵 <span class="arithmatex">\(A\)</span> 差一个负号。</p>
+<p><strong>使用 <span class="arithmatex">\(u_i = \frac{1}{\sigma_i} A v_i\)</span> 可以强制锁定 <span class="arithmatex">\(u_i\)</span> 的方向</strong>，使其与 <span class="arithmatex">\(v_i\)</span> 通过矩阵 <span class="arithmatex">\(A\)</span> 完美匹配。</p>
+<h4 id="_7">原因二：计算简便<a class="headerlink" href="#_7" title="Permanent link">¶</a></h4>
+<p>通常 <span class="arithmatex">\(v_i\)</span> 已经算出，<span class="arithmatex">\(\sigma_i\)</span> 也算出了。直接做一个矩阵向量乘法 <span class="arithmatex">\(Av_i\)</span> 再除以标量，比重新构建大矩阵 <span class="arithmatex">\(AA^T\)</span> 并做特征分解要快得多（尤其是当 <span class="arithmatex">\(m \gg n\)</span> 时）。</p>
+<h2 id="qr">QR 分解<a class="headerlink" href="#qr" title="Permanent link">¶</a></h2>
+<h2 id="_8">满秩分解<a class="headerlink" href="#_8" title="Permanent link">¶</a></h2>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="最后更新">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="创建日期">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="2026年1月12日 12:37:16 UTC">2026年1月12日</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+                
+
+  
+  <script src="https://giscus.app/client.js" data-repo="Gongzihang6/Algorithm-Introduction-Questions" data-repo-id="R_kgDOOJYVMA" data-category="General" data-category-id="DIC_kwDOOJYVMM4C0KG2" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
+
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2025 Gongzihang6
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["toc.follow", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
